@@ -113,7 +113,7 @@ namespace DataAccessLibrary
         {
             List<BasicCaseModel> output = new List<BasicCaseModel>();
             
-            string sql = "SELECT Id, Form, Refresh FROM CaseIDs where Form=@formType";
+            string sql = "SELECT Id, Form, Refresh FROM CaseIDs where Form=@form";
             output = db.LoadData<BasicCaseModel, dynamic>(sql, new { Form = formType }, _connectionString);
 
             return output;
@@ -128,7 +128,7 @@ namespace DataAccessLibrary
         public List<string> GetListOfCaseIdsByForm(string formType)
         {
             List<string> output = new List<string>();
-            string sql = "SELECT Id FROM CaseIDs where Form=@formType";
+            string sql = "SELECT Id FROM CaseIDs where Form=@form";
             output = db.LoadData<string, dynamic>(sql,
                 new {Form = formType}, _connectionString);
             return output;
@@ -144,7 +144,7 @@ namespace DataAccessLibrary
         {
             List<FullCaseModel> output = new List<FullCaseModel>();
 
-            string sql = "SELECT * FROM Cases where Form=@formType";
+            string sql = "SELECT * FROM Cases where Form=@form";
             output = db.LoadData<FullCaseModel, dynamic>(sql, new { Form = formType }, _connectionString);
 
             return output;

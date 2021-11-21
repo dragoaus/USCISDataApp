@@ -28,7 +28,7 @@ namespace USCISData
             //var listOfCases = GenerateListOfCases(c, "WAC2190093072", 1, 1);
 
 
-            var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 29854);
+            var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 2985);
             var listOfDownloadedCases = await GetCasesFromWebSiteParallelAsync(c, listOfCases, 100);
             GetOpenCases(listOfDownloadedCases);
             UpdateCaseStatus(sql, listOfDownloadedCases, "I-129F");
@@ -246,7 +246,7 @@ namespace USCISData
             {
                 WebAccessClient newWebForTask = new WebAccessClient("https://egov.uscis.gov/casestatus/mycasestatus.do");
                 _webConnections.Add(newWebForTask);
-                list.Add( UpdateCaseStatusAsync(newWebForTask, item));
+                list.Add( newWebForTask.GetListOfIdAsync("appReceiptNum", item));
             }
             
             var results = await Task.WhenAll(list);

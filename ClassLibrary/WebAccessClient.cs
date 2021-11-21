@@ -68,5 +68,23 @@ namespace ClassLibrary
             output = new Tuple<string, string>(id, response.ToString());
             return output;
         }
+
+        /// <summary>
+        /// Get Information for List of IDs for the Target site
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="idList"></param>
+        /// <returns></returns>
+        public async Task<List<Tuple<string, string>>> GetListOfIdAsync(string fieldName, List<string> idList)
+        {
+            List<Tuple<string, string>> htmlList = new List<Tuple<string, string>>();
+
+            foreach (var id in idList)
+            {
+                htmlList.Add(await GetIdAsync(fieldName, id));
+            }
+
+            return htmlList;
+        }
     }
 }
