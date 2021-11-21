@@ -7,16 +7,24 @@ using HtmlAgilityPack;
 
 namespace ClassLibrary
 {
+    /// <summary>
+    /// Helper Class providing different services such es spitting strings, lists, html data
+    /// </summary>
     public class Converter
     {
+        /// <summary>
+        /// Split USCIS number to alphabetical and numerical part
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Dictionary<string, uint> SplitUscisNum(string id)
         {
             Dictionary<string, uint> output = new Dictionary<string, uint>();
             
             string prefix = id.Substring(0, 3).ToUpper();
-            uint sufix = uint.Parse(id.Substring(3));
+            uint suffix = uint.Parse(id.Substring(3));
             
-            output.Add(prefix,sufix);
+            output.Add(prefix,suffix);
             return output;
         }
 
@@ -57,7 +65,7 @@ namespace ClassLibrary
 
 
         /// <summary>
-        /// Extract case data from HTML
+        /// Extract case data from HTML and splits data into separate parts
         /// </summary>
         /// <param name="htmlString"></param>
         public Tuple<string, string, DateTime, string, DateTime, string> ExtractCaseData(string id, string htmlString)
@@ -113,7 +121,7 @@ namespace ClassLibrary
         }
 
         /// <summary>
-        /// Splits list of Type T to requested number of splits
+        /// Splits list of Type T to requested number of smaller lists
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="inputList"></param>
@@ -123,11 +131,6 @@ namespace ClassLibrary
         {
             List<List<T>> output = new List<List<T>>();
             var splits = inputList.Select((item, index) => new { index, item }).GroupBy(x => x.index % numOfSplits).Select(x => x.Select(y => y.item));
-
-            //int i = 0;
-            //var splits = from item in inputList
-            //             group item by i++ % numOfSplits into part
-            //    select part.AsEnumerable();
 
             foreach (var item in splits)
             {

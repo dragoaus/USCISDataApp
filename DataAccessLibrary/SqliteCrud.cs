@@ -103,27 +103,49 @@ namespace DataAccessLibrary
             }
         }
 
+
         /// <summary>
-        /// Return list of USCIS codes of specific type from database
+        /// Return list of USCIS Models of specific formType
         /// </summary>
-        /// <param name="form"></param>
+        /// <param name="formType"></param>
         /// <returns></returns>
-        public List<BasicCaseModel> FilterCaseIdsByForm(string form)
+        public List<BasicCaseModel> GetListOfBasicModelsByForm(string formType)
         {
             List<BasicCaseModel> output = new List<BasicCaseModel>();
             
-            string sql = "SELECT Id, Form, Refresh FROM CaseIDs where Form=@form";
-            output = db.LoadData<BasicCaseModel, dynamic>(sql, new { Form = form }, _connectionString);
+            string sql = "SELECT Id, Form, Refresh FROM CaseIDs where Form=@formType";
+            output = db.LoadData<BasicCaseModel, dynamic>(sql, new { Form = formType }, _connectionString);
 
             return output;
         }
 
-        public List<FullCaseModel> FilterStatusesByForm(string form)
+
+        /// <summary>
+        /// Return list of strings of USCIS codes of specific type
+        /// </summary>
+        /// <param name="formType"></param>
+        /// <returns></returns>
+        public List<string> GetListOfCaseIdsByForm(string formType)
+        {
+            List<string> output = new List<string>();
+            string sql = "SELECT Id FROM CaseIDs where Form=@formType";
+            output = db.LoadData<string, dynamic>(sql,
+                new {Form = formType}, _connectionString);
+            return output;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formType"></param>
+        /// <returns></returns>
+        public List<FullCaseModel> GetListOfFullModelsByForm(string formType)
         {
             List<FullCaseModel> output = new List<FullCaseModel>();
 
-            string sql = "SELECT * FROM Cases where Form=@form";
-            output = db.LoadData<FullCaseModel, dynamic>(sql, new { Form = form }, _connectionString);
+            string sql = "SELECT * FROM Cases where Form=@formType";
+            output = db.LoadData<FullCaseModel, dynamic>(sql, new { Form = formType }, _connectionString);
 
             return output;
         }
@@ -132,6 +154,14 @@ namespace DataAccessLibrary
         {
             string sql = "UPDATE CaseIDs SET Form=@Form where Id=@Id";
             db.SaveData(sql,new {Id=id, Form=formType},_connectionString);
+        }
+
+        public void UpdateFormTypeForListOfCaseIds(List<FullCaseModel> listOfCases)
+        {
+            foreach (var item in listOfCases)
+            {
+                UpdateFormTypeForCaseIds(item.Id, item.FormType);
+            }
         }
 
         public void UpdateRefreshTimeForCaseIds(FullCaseModel uscisCase)
@@ -150,6 +180,7 @@ namespace DataAccessLibrary
             output = listOfCases;
             return output;
         }
+
 
 
     }

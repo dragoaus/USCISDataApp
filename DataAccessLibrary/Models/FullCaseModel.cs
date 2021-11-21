@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DataAccessLibrary.Annotations;
+
 
 namespace DataAccessLibrary.Models
 {
@@ -38,11 +38,7 @@ namespace DataAccessLibrary.Models
         }
 
 
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+
 
         
     }

@@ -9,8 +9,8 @@ using ClassLibrary;
 using DataAccessLibrary;
 using DataAccessLibrary.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic;
-using WebAccessLibrary;
+
+
 
 namespace USCISData
 {
@@ -27,14 +27,11 @@ namespace USCISData
 
             //var listOfCases = GenerateListOfCases(c, "WAC2190093072", 1, 1);
 
-            //var listOfCases = FilterCaseIdsByForm(sql, "I-129F").GetRange(29000,903);
 
-            var listOfCases = FilterCaseIdsByForm(sql, "I-129F").GetRange(20000, 9854);
-
-            var listOfDownloadedCases = await GetCasesFromWebSiteParallelAsync(c, listOfCases, 50);
-
+            var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 29854);
+            var listOfDownloadedCases = await GetCasesFromWebSiteParallelAsync(c, listOfCases, 100);
+            GetOpenCases(listOfDownloadedCases);
             UpdateCaseStatus(sql, listOfDownloadedCases, "I-129F");
-
 
 
             Console.WriteLine("Done");
@@ -45,12 +42,58 @@ namespace USCISData
         /// <summary>
         /// Static Members 
         /// </summary>
-        static WebAccess webConnectionCheck = new WebAccess("https://egov.uscis.gov/casestatus/mycasestatus.do");
-        static List<WebAccess> webConnections = new List<WebAccess>();
+        static readonly WebAccessClient webConnectionCheck = new WebAccessClient("https://egov.uscis.gov/casestatus/mycasestatus.do");
+        static List<WebAccessClient> _webConnections = new List<WebAccessClient>();
         
         
         /////////////////////////////////
+        public static void GetOpenCases(List<FullCaseModel> cases)
+        {
+            List<FullCaseModel> untouchedCases = cases.Where(c => c.CaseStatus == "Case Was Received").ToList();
 
+            List<FullCaseModel> openCases = cases.Where(c => c.CaseStatus == "Name Was Updated" ||
+                                                             c.CaseStatus == "Request for Additi onal Evidence Was Sent" ||
+                                                             c.CaseStatus == "Request for Initial Evidence Was Sent" ||
+                                                             c.CaseStatus == "Response To USCIS&#039; Request For Evidence Was Received").ToList();
+            
+            List<FullCaseModel> closedCases = cases.Where(c => c.CaseStatus == "Case Was Approved" ||
+                                                               c.CaseStatus== "Case Was Denied" ||
+                                                               c.CaseStatus== "Case Closed Benefit Received By Other Means" ||
+                                                               c.CaseStatus== "Case Rejected Because I Sent An Incorrect Fee" ||
+                                                               c.CaseStatus== "Case Was Rejected Because I Did Not Sign My Form" ||
+                                                               c.CaseStatus== "Case Was Rejected Because It Was Improperly Filed" ||
+                                                               c.CaseStatus== "Notice Explaining USCIS Actions Was Mailed" ||
+                                                               c.CaseStatus == "Withdrawal Acknowledgement Notice Was Sent").ToList();
+            
+            var groupedCases = untouchedCases.GroupBy(c => new { c.LastUpDateTime.Year, c.LastUpDateTime.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
+            Console.WriteLine("Untouched cases per Month (contains only Case Was Received status):");
+            foreach (var c in groupedCases)
+            {
+                Console.WriteLine(c.Key + " " + c.Count());
+            }
+            Console.WriteLine("Total Num of Untouched Cases: " + untouchedCases.Count);
+            Console.WriteLine();
+            Console.WriteLine();
+
+            groupedCases = openCases.GroupBy(c => new{c.LastUpDateTime.Year, c.LastUpDateTime.Month}).OrderBy(c => c.Key.Month ).OrderBy(c => c.Key.Year).ToList();
+            Console.WriteLine("Open cases per Month (RFE, Initial Evidence and other):");
+            foreach (var c in groupedCases)
+            {
+                Console.WriteLine(c.Key +" "+ c.Count());
+            }
+            Console.WriteLine("Total Num of Open Cases: " + openCases.Count);
+            Console.WriteLine();
+            Console.WriteLine();
+
+            groupedCases = closedCases.GroupBy(c => new { c.LastUpDateTime.Year, c.LastUpDateTime.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
+            Console.WriteLine("Closed Cases per Month (Denials, rejections, withdrawals and other):");
+            foreach (var c in groupedCases)
+            {
+                Console.WriteLine(c.Key + " " + c.Count());
+            }
+            Console.WriteLine("Total Num of Closed Cases: " + closedCases.Count);
+
+        }
         /// <summary>
         /// Update Form Types for CaseIDs DB
         /// </summary>
@@ -140,7 +183,7 @@ namespace USCISData
         public static List<string> FilterCaseIdsByForm(SqliteCrud sql, string formType)
         {
             List<string> output = new List<string>();
-            List<BasicCaseModel> listOfCases = sql.FilterCaseIdsByForm(formType);
+            List<BasicCaseModel> listOfCases = sql.GetListOfBasicModelsByForm(formType);
 
             foreach (var item in listOfCases)
             {
@@ -159,7 +202,7 @@ namespace USCISData
         public static List<FullCaseModel> FilterStatusByForm(SqliteCrud sql, string formType)
         {
             List<FullCaseModel> output = new List<FullCaseModel>();
-            List<FullCaseModel> listOfCases = sql.FilterStatusesByForm(formType);
+            List<FullCaseModel> listOfCases = sql.GetListOfFullModelsByForm(formType);
             output= listOfCases.OrderBy(c => c.Id).ThenBy(c => c.LastUpDateTime).ToList();
             return output;
         }
@@ -171,7 +214,7 @@ namespace USCISData
         /// <param name="web"></param>
         /// <param name="idList"></param>
         /// <returns></returns>
-        public static async Task<List<Tuple<string, string>>> UpdateCaseStatusAsync(WebAccess web, List<string> idList)
+        public static async Task<List<Tuple<string, string>>> UpdateCaseStatusAsync(WebAccessClient web, List<string> idList)
         {
             // initialize list of tuples to store USCIS feedback
             List<Tuple<string, string>> htmlList = new List<Tuple<string, string>>();
@@ -201,8 +244,8 @@ namespace USCISData
 
             foreach (var item in splits)
             {
-                WebAccess newWebForTask = new WebAccess("https://egov.uscis.gov/casestatus/mycasestatus.do");
-                webConnections.Add(newWebForTask);
+                WebAccessClient newWebForTask = new WebAccessClient("https://egov.uscis.gov/casestatus/mycasestatus.do");
+                _webConnections.Add(newWebForTask);
                 list.Add( UpdateCaseStatusAsync(newWebForTask, item));
             }
             
