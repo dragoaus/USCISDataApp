@@ -181,7 +181,34 @@ namespace DataAccessLibrary
             return output;
         }
 
+        /// <summary>
+        /// Update case statuses in the DB
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="listOfCases"></param>
+        /// <param name="formType"></param>
+        /// <returns></returns>
+        public void UpdateCaseStatus(List<FullCaseModel> listOfCases, string formType)
+        {
+            List<FullCaseModel> output = new List<FullCaseModel>();
+            //get list of cases from the db
+            List<FullCaseModel> listOfStatuses = GetListOfFullModelsByForm(formType);
 
+            //compare if there are members of listOfCases that are not contained in list of cases in db
+            foreach (var item in listOfCases)
+            {
+                var temp = listOfStatuses.Where(x => (x.Id == item.Id) && (x.LastUpDateTime == item.LastUpDateTime)).ToList();
+                if (temp.Count == 0)
+                {
+                    output.Add(item);
+                }
+            }
+
+            foreach (var item in output)
+            {
+                UpsertCase(item);
+            }
+        }
 
     }
 }

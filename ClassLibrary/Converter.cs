@@ -32,14 +32,15 @@ namespace ClassLibrary
         /// <summary>
         /// Generates CaseList that needs to be checked in USCIS system
         /// </summary>
-        /// <param name="caseId"></param>
+        /// <param name="startCase"></param>
         /// <param name="beforeCase"></param>
         /// <param name="afterCase"></param>
         /// <returns></returns>
-        public List<string> GenerateCaseList(Dictionary<string, uint> caseId, uint beforeCase, uint afterCase)
+        public List<string> GenerateCaseList( string startCase, uint beforeCase, uint afterCase)
         {
             List<string> output = new List<string>();
-            
+            Dictionary<string, uint> caseId = SplitUscisNum(startCase);
+
             string prefix = caseId.Keys.First();
             uint postfix = caseId.Values.First();
 
