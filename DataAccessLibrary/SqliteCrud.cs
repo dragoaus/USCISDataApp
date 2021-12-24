@@ -17,6 +17,9 @@ namespace DataAccessLibrary
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Create new Datebase
+        /// </summary>
         public void CreateNewDb()
         {
             string sql;
@@ -37,12 +40,20 @@ namespace DataAccessLibrary
             db.CreateNewDb(sql, _connectionString);
         }
 
+        /// <summary>
+        /// Get all Full Cases in the Database
+        /// </summary>
+        /// <returns></returns>
         public List<FullCaseModel> GetAllFullCasesAsModels()
         {
             string sql = "SELECT * FROM Cases";
             return db.LoadData<FullCaseModel,dynamic>(sql, new { }, _connectionString);
         }
 
+        /// <summary>
+        /// Get all case IDs from DB
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetAllCaseIDsAsStrings()
         {
             string sql = "SELECT * FROM CaseIDs";
@@ -59,7 +70,10 @@ namespace DataAccessLibrary
             return output;
         }
 
-
+        /// <summary>
+        /// Create new Full Case in Database
+        /// </summary>
+        /// <param name="uscisCase"></param>
         public void CreateCase(FullCaseModel uscisCase)
         {
             string sql = "INSERT INTO Cases (Id, Status, LastUpdate, Form, Refresh, CaseDetails) values (@Id, @Status, @LastUpdate, @Form, @Refresh, @CaseDetails);";
@@ -136,7 +150,7 @@ namespace DataAccessLibrary
 
 
         /// <summary>
-        /// 
+        /// Get list of full cases of certain formType
         /// </summary>
         /// <param name="formType"></param>
         /// <returns></returns>
@@ -150,12 +164,21 @@ namespace DataAccessLibrary
             return output;
         }
 
+        /// <summary>
+        /// Update formType for one case
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="formType"></param>
         public void UpdateFormTypeForCaseIds(string id, string formType)
         {
             string sql = "UPDATE CaseIDs SET Form=@Form where Id=@Id";
             db.SaveData(sql,new {Id=id, Form=formType},_connectionString);
         }
 
+        /// <summary>
+        /// Update formType for list of cases
+        /// </summary>
+        /// <param name="listOfCases"></param>
         public void UpdateFormTypeForListOfCaseIds(List<FullCaseModel> listOfCases)
         {
             foreach (var item in listOfCases)
@@ -163,13 +186,20 @@ namespace DataAccessLibrary
                 UpdateFormTypeForCaseIds(item.Id, item.FormType);
             }
         }
-
+        /// <summary>
+        /// Update refresh time for list of cases
+        /// </summary>
+        /// <param name="uscisCase"></param>
         public void UpdateRefreshTimeForCaseIds(FullCaseModel uscisCase)
         {
             string sql = "UPDATE CaseIDs Set Refresh=@Refresh where Id=@Id";
             db.SaveData(sql, new{Id=uscisCase.Id, Refresh=uscisCase.RefreshDateTime},_connectionString);
         }
 
+        /// <summary>
+        /// Get all case IDs in database
+        /// </summary>
+        /// <returns></returns>
         public List<BasicCaseModel> GetAllCaseIDsAsModels()
         {
             string sql = "SELECT * FROM CaseIDs";
@@ -182,7 +212,7 @@ namespace DataAccessLibrary
         }
 
         /// <summary>
-        /// Update case statuses in the DB
+        /// Update case statuses in the database
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="listOfCases"></param>
@@ -210,5 +240,16 @@ namespace DataAccessLibrary
             }
         }
 
+        public List<FullCaseModel> GetLatestStatusInDb(string formType)
+        {
+            List<FullCaseModel> fullCases = new List<FullCaseModel>();
+            List<string> caseIds = new List<string>();
+
+            fullCases = GetListOfFullModelsByForm(formType);
+            caseIds = fullCases.Select(c => c.Id).Distinct().ToList();
+
+
+            return fullCases;
+        }
     }
 }

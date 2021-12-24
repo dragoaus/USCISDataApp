@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassLibrary", "ClassLibrar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "USCISDataApp.Tests", "USCISDataApp.Tests\USCISDataApp.Tests.csproj", "{F5ED1D06-178B-41BC-8AA2-8D27BDDC03BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USCISStats", "USCISStats\USCISStats.csproj", "{52807102-8B35-4350-A355-67791F479868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F5ED1D06-178B-41BC-8AA2-8D27BDDC03BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5ED1D06-178B-41BC-8AA2-8D27BDDC03BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5ED1D06-178B-41BC-8AA2-8D27BDDC03BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52807102-8B35-4350-A355-67791F479868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52807102-8B35-4350-A355-67791F479868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52807102-8B35-4350-A355-67791F479868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52807102-8B35-4350-A355-67791F479868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

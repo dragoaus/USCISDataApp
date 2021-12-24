@@ -24,15 +24,41 @@ namespace USCISData
 
             Converter c = new Converter();
             SqliteCrud sql = new SqliteCrud(GetConnectionString());
-
+            
             //var listOfCases = GenerateListOfCases(c, "WAC2190093072", 1, 1);
             //var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 29854);
 
             var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 29854);
-            var listOfDownloadedCases = await GetCasesFromWebSiteParallelAsync(c, listOfCases, 50);
-            GetOpenCases(listOfDownloadedCases);
-            sql.UpdateCaseStatus(listOfDownloadedCases, "I-129F");
+            var listOfDownloadedCases = await GetCasesFromWebSiteParallelAsync(c, listOfCases, 250);
 
+            DataStatsModel stats = new DataStatsModel(listOfDownloadedCases);
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Untouched - Cases that only have NOA1 status -> if noa was in Jan, than case is in Jan");
+            foreach (var caseStats in stats.UntouchedCasesStatistics)
+            {
+                Console.WriteLine(stats.GetStatsForCase(caseStats));
+            }
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Open - any other status than NOA1 or fully closes cases");
+            Console.WriteLine("It shows monthly processing rate -> month when new status was applied");
+            foreach (var caseStats in stats.OpenCasesStatistics)
+            {
+                Console.WriteLine(stats.GetStatsForCase(caseStats));
+            }
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Closed - approvals, denials, withdrawals and any other status indicating that case if closed");
+            Console.WriteLine("It shows monthly processing rate -> month when the case was closed");
+            foreach (var caseStats in stats.ClosedCasesStatistics)
+            {
+                Console.WriteLine(stats.GetStatsForCase(caseStats));
+            }
+            sql.UpdateCaseStatus(listOfDownloadedCases, "I-129F");
 
             Console.WriteLine("Done");
             Console.ReadKey();
@@ -66,49 +92,7 @@ namespace USCISData
         }
 
         /////////////////////////////////
-        public static void GetOpenCases(List<FullCaseModel> cases)
-        {
-            List<FullCaseModel> untouchedCases = cases.Where(c => c.CaseStatus == "Case Was Received").ToList();
 
-            List<FullCaseModel> openCases = cases.Where(c => c.CaseStatus == "Name Was Updated" ||
-                                                             c.CaseStatus == "Request for Additi onal Evidence Was Sent" ||
-                                                             c.CaseStatus == "Request for Initial Evidence Was Sent" ||
-                                                             c.CaseStatus == "Response To USCIS&#039; Request For Evidence Was Received").ToList();
-            
-            List<FullCaseModel> closedCases = cases.Where(c => c.CaseStatus == "Case Was Approved" ||
-                                                               c.CaseStatus== "Case Was Denied" ||
-                                                               c.CaseStatus== "Case Closed Benefit Received By Other Means" ||
-                                                               c.CaseStatus== "Case Rejected Because I Sent An Incorrect Fee" ||
-                                                               c.CaseStatus== "Case Was Rejected Because I Did Not Sign My Form" ||
-                                                               c.CaseStatus== "Case Was Rejected Because It Was Improperly Filed" ||
-                                                               c.CaseStatus== "Notice Explaining USCIS Actions Was Mailed" ||
-                                                               c.CaseStatus == "Withdrawal Acknowledgement Notice Was Sent").ToList();
-            
-            Console.WriteLine("Untouched cases per Month (contains only Case Was Received status):");
-            StatisticsListCaseGroupedByStatus(untouchedCases);
-            Console.WriteLine("Total Num of Untouched Cases: " + untouchedCases.Count);
-            Console.WriteLine();
-            Console.WriteLine();
-
-            Console.WriteLine("Open cases per Month (RFE, Initial Evidence and other):");
-            StatisticsListCaseGroupedByStatus(openCases);
-            Console.WriteLine("Total Num of Open Cases: " + openCases.Count);
-            Console.WriteLine();
-            Console.WriteLine();
-
-
-            Console.WriteLine("Closed Cases per Month (Denials, rejections, withdrawals and other):");
-            StatisticsListCaseGroupedByStatus(closedCases);
-            Console.WriteLine("Total Num of Closed Cases: " + closedCases.Count);
-            Console.WriteLine();
-            Console.WriteLine();
-
-            
-            Console.WriteLine("Cases grouped by case number:");
-            StatisticsListCaseGroupedByUsicisNum(cases);
-
-            
-        }
 
         public static void StatisticsListCaseGroupedByStatus(List<FullCaseModel> listOfItems)
         {
@@ -118,16 +102,30 @@ namespace USCISData
                 Console.WriteLine(c.Key + " " + c.Count());
             }
         }
-        public static void StatisticsListCaseGroupedByUsicisNum(List<FullCaseModel> listOfItems)
+        public static void StatisticsListCaseGroupedByUscisNum(List<FullCaseModel> listOfItems)
         {
-            var casesGroupedByUsicsNum = listOfItems.GroupBy(c => new string(c.Id.Substring(0, 10)));
-            casesGroupedByUsicsNum = casesGroupedByUsicsNum.OrderBy(c => c.Key);
-            foreach (var c in casesGroupedByUsicsNum)
+            var casesGroupedByUscisNum = listOfItems.GroupBy(c => new string(c.Id.Substring(0, 10)));
+            casesGroupedByUscisNum = casesGroupedByUscisNum.OrderBy(c => c.Key);
+            foreach (var c in casesGroupedByUscisNum)
             {
                 Console.WriteLine(c.Key + " " + c.Count());
             }
         }
+        public static void StatisticsListCase(List<FullCaseModel> cases, List<FullCaseModel> openCases)
+        {
+            var casesGroupedByUscisNum = cases.GroupBy(c => new string(c.Id.Substring(0, 10)));
+            casesGroupedByUscisNum = casesGroupedByUscisNum.OrderBy(c => c.Key);
 
+            var openCasesGroupedByUscisNum = cases.GroupBy(c => new string(c.Id.Substring(0, 10)));
+
+            Console.WriteLine("Total Cases " + " " + "Number");
+
+            foreach (var c in casesGroupedByUscisNum)
+            {
+                var openCaseStats = openCasesGroupedByUscisNum.Where(oc => oc.Key==c.Key).FirstOrDefault();
+                Console.WriteLine(c.Key + " " + c.Count() + " " + openCaseStats.Key + " " + openCaseStats.Count());
+            }
+        }
         /// <summary>
         /// Download data from USCIS website
         /// </summary>
