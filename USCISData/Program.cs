@@ -28,35 +28,35 @@ namespace USCISData
             //var listOfCases = GenerateListOfCases(c, "WAC2190093072", 1, 1);
             //var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 29854);
 
-            var listOfCases = sql.GetListOfCaseIdsByForm("I-129F").GetRange(0, 29854);
+            var listOfCases = sql.GetListOfCaseIdsByForm("I-129F");
             var listOfDownloadedCases = await GetCasesFromWebSiteParallelAsync(c, listOfCases, 250);
 
-            DataStatsModel stats = new DataStatsModel(listOfDownloadedCases);
+            DataStatisticsModel statistics = new DataStatisticsModel(listOfDownloadedCases);
 
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Untouched - Cases that only have NOA1 status -> if noa was in Jan, than case is in Jan");
-            foreach (var caseStats in stats.UntouchedCasesStatistics)
+            foreach (var caseStats in statistics.UntouchedCasesStatistics)
             {
-                Console.WriteLine(stats.GetStatsForCase(caseStats));
+                Console.WriteLine(statistics.GetStatsForCase(caseStats));
             }
 
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Open - any other status than NOA1 or fully closes cases");
             Console.WriteLine("It shows monthly processing rate -> month when new status was applied");
-            foreach (var caseStats in stats.OpenCasesStatistics)
+            foreach (var caseStats in statistics.OpenCasesStatistics)
             {
-                Console.WriteLine(stats.GetStatsForCase(caseStats));
+                Console.WriteLine(statistics.GetStatsForCase(caseStats));
             }
 
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Closed - approvals, denials, withdrawals and any other status indicating that case if closed");
             Console.WriteLine("It shows monthly processing rate -> month when the case was closed");
-            foreach (var caseStats in stats.ClosedCasesStatistics)
+            foreach (var caseStats in statistics.ClosedCasesStatistics)
             {
-                Console.WriteLine(stats.GetStatsForCase(caseStats));
+                Console.WriteLine(statistics.GetStatsForCase(caseStats));
             }
             sql.UpdateCaseStatus(listOfDownloadedCases, "I-129F");
 

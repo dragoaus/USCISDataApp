@@ -100,16 +100,19 @@ namespace ClassLibrary
             var caseDetails = caseInfos.Substring(2).Split(",").ToList();
 
             // extract datum
-            string lastUpdateString = caseDetails[1] + caseDetails[0];
+            string lastUpdateString = Regex
+                .Match(
+                    caseInfos, "(?:January|February|March|April|May|June|July|August|September|October|November|December) \\d{1,2}\\, \\d{4}"
+                ).Value.Replace(",", "");
             DateTime lastUpdateDate;
             DateTime.TryParse(lastUpdateString, out lastUpdateDate);
 
             // extract form type
             string formType = "N/A";
-            if (caseDetails[2].Contains("your Form"))
+            rx = new Regex("([A-Z]{1,4})([-]{1})(\\d{1,3})\\w+");
+            if (rx.Match(caseInfos).Success)
             {
-                temp = caseDetails[2].IndexOf("F");
-                formType = caseDetails[2].Substring(temp + 5);
+                formType = rx.Match(caseInfos).Value;
             }
 
             // time stamp for refresh

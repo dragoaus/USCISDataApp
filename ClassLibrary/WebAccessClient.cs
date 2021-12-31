@@ -86,5 +86,19 @@ namespace ClassLibrary
 
             return htmlList;
         }
+        public async Task<List<Tuple<string, string>>> GetListOfIdAsync(string fieldName, List<string> idList, IProgress<MyTaskProgressReport> progress)
+        {
+            List<Tuple<string, string>> htmlList = new List<Tuple<string, string>>();
+
+            int status = 0;
+            foreach (var id in idList)
+            {
+                htmlList.Add(await GetIdAsync(fieldName, id));
+                status++;
+                progress.Report(new MyTaskProgressReport {CurrentProgressAmount = 1});
+            }
+
+            return htmlList;
+        }
     }
 }

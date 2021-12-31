@@ -33,8 +33,8 @@
         </DockPanel>
 
         <ToolBarTray Grid.Row="1" Background="AliceBlue" Grid.ColumnSpan="1" >
-            <ToolBar Band="1" FontSize="15" Background="AliceBlue">
-                <Button x:Name="BtnNewDb"  Margin="10,0,10,0">
+            <ToolBar Band="1" FontSize="15" FontWeight="DemiBold" Background="AliceBlue">
+                <Button x:Name="BtnNewDb"  Margin="10,0,10,0" Click="BtnNewDb_Click">
                     <StackPanel>
                         <Image Source="some.jpg" Stretch="None" />
                         <TextBlock>New Database</TextBlock>
@@ -70,41 +70,42 @@
                     <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
 
                         <StackPanel Background="AntiqueWhite">
-                            <Label Height="30" Margin="0,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold">Update existing data</Label>
+                            <Label Height="30" Margin="0,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold">Update data in view</Label>
 
-                            <Button x:Name="BtnUpdate" Content="Update data from USCIS" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0"  HorizontalContentAlignment="Center" Click="BtnUpdate_Click" />
-                            <Button x:Name="BtnSaveUpdateToDb" Content="Save update to Database" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center" />
+                            <Button x:Name="BtnUpdate" Content="Update data from USCIS" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False"  HorizontalContentAlignment="Center" Click="BtnUpdate_Click" />
+                            
                         </StackPanel>
 
                         <StackPanel Background="AliceBlue">
                             <Label Height="30" Margin="0,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold">Get new cases from USCIS</Label>
                             <StackPanel Orientation="Horizontal" >
-                                <Button x:Name="btn_New_Batch" Content="Get New Batch" Margin="10" Height="30" Width="110" HorizontalAlignment="Left" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center"/>
-                                <TextBox Text="USCIS Num" MinWidth="110" Height="30" MaxLength="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="BtnNewBatch" Content="Get New Batch" Margin="10" Height="30" Width="110" HorizontalAlignment="Left" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0"  HorizontalContentAlignment="Center" Click="BtnNewBatch_Click"/>
+                                <TextBox x:Name="TboxUscisNum" Text="USCIS Num" MinWidth="110" Height="30" MaxLength="13" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" >
                                 <Label Content="Cases Before:" FontWeight="Normal" Margin="10" Height="30" Width="110" Padding="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                                <TextBox Text="10000" MinWidth="110" Height="30" MaxLength="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="TboxCasesBefore" Text="10000" MinWidth="110" Height="30" MaxLength="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" >
                                 <Label Content="Cases After:" FontWeight="Normal" Margin="10" Height="30" Width="110" Padding="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                                <TextBox Text="10000" MinWidth="110" Height="30" MaxLength="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="TboxCasesAfter" Text="10000" MinWidth="110" Height="30" MaxLength="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" >
+                                <Label Content="Threads:" FontWeight="Normal" Margin="10" Height="30" Width="110" Padding="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <TextBox x:Name="TbThreads" Text="100" MinWidth="110" Height="30" MaxLength="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                             </StackPanel>
                             <Button x:Name="btn_AddToExistingDB" Content="Add new cases to existing Database" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center" />
                             <Button x:Name="btn_SaveNewDataToDB" Content="Save new cases to new Database" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center" />
                         </StackPanel>
-                        <StackPanel Background="Beige">
-                            <Label Height="30" Margin="0,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold">Export to Excel File</Label>
-                            <Button x:Name="BtnExtractToExcel" Content="Extract to Excel" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center" />
-                        </StackPanel>
+
 
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" CanHorizontallyScroll="True"  >
                         <ToolBarTray Background="AliceBlue" IsLocked="True" >
-                            <ToolBar Band="1" FontSize="15" Background="AliceBlue">
+                            <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
                                 <StackPanel Orientation="Horizontal"  >
-                                    <ComboBox x:Name="ComboBoxFilter"  Width="110" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="Black" >
+                                    <ComboBox x:Name="ComboBoxFilter"  Width="110" Height="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="Black" >
                                         <ComboBoxItem IsSelected="True">All Cases</ComboBoxItem>
                                         <ComboBoxItem >I-129F</ComboBoxItem>
                                         <ComboBoxItem >I-751</ComboBoxItem>
@@ -119,14 +120,21 @@
                                 </StackPanel>
 
                                 <Separator></Separator>
-                                <Button x:Name="ButtonStatistics" Background="#D9E4EC" Margin="10,0,10,0" Click="OpenDatabase">
+                                <Button x:Name="ButtonStatistics" IsEnabled="False" Width="120" Margin="10,0,10,0" Click="ButtonStatistics_Click">
                                     <StackPanel>
                                         <Image Source="some.jpg" Stretch="None" />
                                         <TextBlock>Run Statistics</TextBlock>
                                     </StackPanel>
                                 </Button>
                                 <Separator></Separator>
-                                <Button  Margin="10,0,10,0">
+                                <Button x:Name="BtnSaveUpdateToDb" Width="120" Margin="0,0,0,0" Click="BtnSaveUpdateToDb_Click"  IsEnabled="False">
+                                    <StackPanel Orientation="Horizontal" >
+                                        <Image Source="some.jpg" Stretch="None" />
+                                        <TextBlock Margin="10,0,10,0">Save to DB</TextBlock>
+                                    </StackPanel>
+                                </Button>
+                                <Separator></Separator>
+                                <Button  Margin="10,0,10,0" Width="120">
                                     <StackPanel>
                                         <Image Source="some.jpg" Stretch="None" />
                                         <TextBlock>Export CSV/Excel</TextBlock>
@@ -138,7 +146,7 @@
                         </ToolBarTray>
                         <StackPanel Orientation="Horizontal"></StackPanel>
 
-                        <DataGrid  x:Name="dg_Data" CanUserSortColumns="True"  EnableColumnVirtualization="True" EnableRowVirtualization="True" VerticalAlignment="Stretch" Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" MaxHeight="633" MaxWidth="2000" MaxColumnWidth="300" ItemsSource="{Binding Source=_listOfCases}"  AutoGenerateColumns="True" Sorting="dg_Sorting"  >
+                        <DataGrid  x:Name="dg_Data" CanUserSortColumns="True"  EnableColumnVirtualization="True" EnableRowVirtualization="True" VerticalAlignment="Stretch" Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" MaxHeight="633" MaxWidth="2000" MaxColumnWidth="300" ItemsSource="{Binding Source=___listOfCasesDB}"  AutoGenerateColumns="True" Sorting="dg_Sorting"  >
                             <DataGrid.Columns>
                                 <!--<DataGridTextColumn Header = "Id" Binding = "{Binding Id }" />
                                 <DataGridTextColumn Header = "Status" Binding = "{Binding Status}" />-->
@@ -160,7 +168,9 @@
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Content="Content goes here..." />
                     <Border Grid.Row="1" BorderBrush="#C6C6C6" BorderThickness="1" >
-                        <TextBlock  Background="GhostWhite" ></TextBlock>
+                        <ScrollViewer>
+                            <TextBlock x:Name="TbStatsOverview" Background="GhostWhite"  ></TextBlock>
+                        </ScrollViewer>
                     </Border>
 
                 </Grid>
@@ -180,25 +190,29 @@
                     <ItemsPanelTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="200" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="200" />
                             </Grid.ColumnDefinitions>
                         </Grid>
                     </ItemsPanelTemplate>
                 </StatusBar.ItemsPanel>
-                <StatusBarItem>
-                    <Label x:Name="InternetStatus" Content="Connecting to USCIS ..."  VerticalAlignment="Top" HorizontalAlignment="Left" Height="20" Padding="0" HorizontalContentAlignment="Center"/>
+                <StatusBarItem >
+                    <Label x:Name="InternetStatus" Width="195" Content="Connecting to USCIS ..."  VerticalAlignment="Top" HorizontalAlignment="Left" Height="20" Padding="0" HorizontalContentAlignment="Center"/>
                 </StatusBarItem>
                 <Separator Grid.Column="1" />
                 <StatusBarItem Grid.Column="2">
-                    <TextBlock Text="c:\path\of\current\file.txt" />
+                    <TextBlock x:Name="TbInfoBlock" Text="Cases in Table: 0" />
                 </StatusBarItem>
                 <Separator Grid.Column="3" />
                 <StatusBarItem Grid.Column="4">
-                    <ProgressBar Value="50" Width="90" Height="16" />
+                    <Grid>
+                        <ProgressBar x:Name="PbStatus" Minimum="0"  Value="0" Width="190" Height="16" />
+                        <TextBlock x:Name="TestBlockPbStatus" Text="Idle" TextAlignment="Center"></TextBlock>
+                    </Grid>
+                    
                 </StatusBarItem>
             </StatusBar>
 
