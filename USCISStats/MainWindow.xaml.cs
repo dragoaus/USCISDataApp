@@ -58,7 +58,7 @@ namespace USCISStats
             this.InternetStatus.Background = new SolidColorBrush(Colors.LawnGreen);
         }
 
-        private void OpenDatabase(object sender, RoutedEventArgs e)
+        private void BtnOpenDatabase_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
@@ -71,39 +71,53 @@ namespace USCISStats
                 string connectionStringName = $"Data Source={fileName};Version=3;";
                 _sql = new SqliteCrud(connectionStringName);
                 _listOfCasesDB = new BindingList<FullCaseModel>(_sql.GetAllFullCasesAsModels());
-                this.dg_Data.ItemsSource = _listOfCasesDB;
+                this.DgData.ItemsSource = _listOfCasesDB;
                 TbInfoBlock.Text = $"Cases in Table: {_listOfCasesDB.Count}";
                 BtnUpdate.IsEnabled = true;
-                ButtonStatistics.IsEnabled = true;
+                BtnStatistics.IsEnabled = true;
             }
         }
 
+        private void BtnNewDb_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+            saveFileDialog.Filter = "Database files (*.db)|*.db|All files (*.*)|*.*";
+            string fileName = "";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                fileName = saveFileDialog.FileName;
+                string connectionStringName = $"Data Source={fileName};Version=3;";
+                _sql = new SqliteCrud(connectionStringName);
+                _sql.CreateNewDb();
+            }
+        }
 
         private void dg_Sorting(object sender, DataGridSortingEventArgs e)
         {
             if (e.Column.Header.ToString() == "Id")
             {
-                this.dg_Data.ItemsSource = _listOfCasesDB.OrderBy(c => c.Id);
+                this.DgData.ItemsSource = _listOfCasesDB.OrderBy(c => c.Id);
             }
             if (e.Column.Header.ToString() == "FormType")
             {
-                this.dg_Data.ItemsSource = _listOfCasesDB.OrderBy(c => c.FormType);
+                this.DgData.ItemsSource = _listOfCasesDB.OrderBy(c => c.FormType);
             }
-
         }
 
-        private void btn_Filter_Click(object sender, RoutedEventArgs e)
+        private void BtnFilter_Click(object sender, RoutedEventArgs e)
         {
             //this.dg_Data.ItemsSource = _listOfCasesDB;
             if (ComboBoxFilter.Text == "All Cases")
             {
-                this.dg_Data.ItemsSource = _listOfCasesDB;
+                this.DgData.ItemsSource = _listOfCasesDB;
                 TbInfoBlock.Text = $"Cases in Table: {_listOfCasesDB.Count}";
             }
             else
             {
                 var filteredList = _listOfCasesDB.Where(c => c.FormType == ComboBoxFilter.Text).ToList();
-                this.dg_Data.ItemsSource = new BindingList<FullCaseModel>(filteredList);
+                this.DgData.ItemsSource = new BindingList<FullCaseModel>(filteredList);
                 TbInfoBlock.Text = $"Cases in Table: {filteredList.Count}";
             }
         }
@@ -111,19 +125,11 @@ namespace USCISStats
         private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             BtnUpdate.IsEnabled = false;
-            TestBlockPbStatus.Text = $"Starting...";
-            List<string> listOfCaseNums = new List<string>();
+            TxtBlkStatus.Text = $"Starting...";
+
+            List<string> listOfUniqueCaseNums = GetListOfUniqueCaseNums();
             
-            foreach (FullCaseModel item in this.dg_Data.ItemsSource)
-            {
-                if (listOfCaseNums.Contains(item.Id)!=true)
-                {
-                    listOfCaseNums.Add(item.Id);
-                }
-                
-            }
-            
-            await GetCases(listOfCaseNums);
+            await GetCases(listOfUniqueCaseNums);
             BtnUpdate.IsEnabled = true;
             BtnSaveUpdateToDb.IsEnabled = true;
             
@@ -131,7 +137,7 @@ namespace USCISStats
 
         private async void BtnNewBatch_Click(object sender, RoutedEventArgs e)
         {
-            TestBlockPbStatus.Text = $"Starting...";
+            TxtBlkStatus.Text = $"Starting...";
 
             List<string> listOfCaseNums = new List<string>();
             uint casesBefore = UInt32.Parse(TboxCasesBefore.Text);
@@ -141,7 +147,7 @@ namespace USCISStats
             await GetCases(listOfCaseNums);
             BtnSaveUpdateToDb.IsEnabled = true;
             BtnUpdate.IsEnabled = true;
-            ButtonStatistics.IsEnabled = true;
+            BtnStatistics.IsEnabled = true;
         }
 
         private async Task GetCases(List<string> listOfCaseNums)
@@ -171,9 +177,9 @@ namespace USCISStats
 
 
 
-            this.dg_Data.ItemsSource = _listOfCasesDB;
+            this.DgData.ItemsSource = _listOfCasesDB;
 
-            TestBlockPbStatus.Text = $"Finished";
+            TxtBlkStatus.Text = $"Finished";
         }
         
         
@@ -185,7 +191,7 @@ namespace USCISStats
         {
             _progress += progress.CurrentProgressAmount;
             PbStatus.Value =_progress;
-            TestBlockPbStatus.Text = $"{_progress}/{PbStatus.Maximum}";
+            TxtBlkStatus.Text = $"{_progress}/{PbStatus.Maximum}";
         }
 
         private async void BtnSaveUpdateToDb_Click(object sender, RoutedEventArgs e)
@@ -193,7 +199,7 @@ namespace USCISStats
             if (_sql != null)
             {
                 BtnUpdate.IsEnabled = false;
-                TestBlockPbStatus.Text = $"Saving started...";
+                TxtBlkStatus.Text = $"Saving started...";
 
                 foreach (var c in _listOfCasesDB)
                 {
@@ -201,74 +207,58 @@ namespace USCISStats
                 }
 
                 BtnSaveUpdateToDb.IsEnabled = false;
-                TestBlockPbStatus.Text = $"Finished";
+                TxtBlkStatus.Text = $"Finished";
                 BtnUpdate.IsEnabled = true;
             }
             else
             {
                 MessageBox.Show("Please select create new database or open existing one!", "Database error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            
         }
 
-        private void BtnNewDb_Click(object sender, RoutedEventArgs e)
+
+        private async void BtnStatistics_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-            saveFileDialog.Filter = "Database files (*.db)|*.db|All files (*.*)|*.*";
-            string fileName = "";
+            PbStatus.IsIndeterminate = true;
+            TxtBlkStatus.Text = "Starting Stats Calculation";
+            List<FullCaseModel> listOfFullCases = new List<FullCaseModel>((IEnumerable<FullCaseModel>) this.DgData.ItemsSource);
+            List<FullCaseModel> latestCaseStatus = new List<FullCaseModel>();
 
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                fileName = saveFileDialog.FileName;
-                string connectionStringName = $"Data Source={fileName};Version=3;";
-                _sql = new SqliteCrud(connectionStringName);
-                _sql.CreateNewDb();
-            }
-        }
-
-        
-
-        private void ButtonStatistics_Click(object sender, RoutedEventArgs e)
-        {
-            List<FullCaseModel> listOfFullCases = new List<FullCaseModel>((IEnumerable<FullCaseModel>) this.dg_Data.ItemsSource);
-
-            DataStatisticsModel statistics = new DataStatisticsModel(listOfFullCases);
-
-            List<FullCaseModel> latestCases = new List<FullCaseModel>();
-
-            List<string> listOfUniqueCaseNums = new List<string>();
-            foreach (FullCaseModel item in this.dg_Data.ItemsSource)
-            {
-                if (listOfUniqueCaseNums.Contains(item.Id) != true)
+            await Task.Run(() =>
                 {
-                    listOfUniqueCaseNums.Add(item.Id);
+                    List<string> listOfUniqueCaseNums = GetListOfUniqueCaseNums();
+                    var orderedList = listOfFullCases.OrderByDescending(c => c.LastUpDateTime).ToList();
+                    foreach (var item in listOfUniqueCaseNums)
+                    {
+                        latestCaseStatus.Add(orderedList.Where(c => c.Id == item).First());
+                    }
                 }
-            }
-
-            var orderedList = listOfFullCases.OrderByDescending(c => c.LastUpDateTime).ToList();
-
-            foreach (var item in listOfUniqueCaseNums)
-            {
-                latestCases.Add(orderedList.Where(c => c.Id == item).First()); 
-            }
-
-
+            );
+            
+            DataStatisticsModel statistics = new DataStatisticsModel(latestCaseStatus);
 
             string basicStatistics="";
-
             basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.UntouchedCasesStatistics,
                 "Untouched - Cases that only have NOA1 status -> if noa was in Jan, than case is in Jan");
-
             basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.OpenCasesStatistics,
                 "It shows monthly processing rate -> month when new status was applied");
-
             basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.ClosedCasesStatistics,
                 "It shows monthly processing rate -> month when the case was closed");
-
             basicStatistics += "Done";
+
             this.TbStatsOverview.Text = basicStatistics;
+            TabStats.Focus();
+            PbStatus.IsIndeterminate = false;
+            TxtBlkStatus.Text = "Finished";
         }
+
+        public List<string> GetListOfUniqueCaseNums()
+        {
+            List<string> output = new List<string>();
+            List<FullCaseModel> listOfFullCasesFromView = new List<FullCaseModel>((IEnumerable<FullCaseModel>)this.DgData.ItemsSource);
+            output = listOfFullCasesFromView.Select(x => new string(x.Id)).Distinct().ToList();
+            return output;
+        }
+
     }
 }
