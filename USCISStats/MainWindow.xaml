@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:USCISStats"
+        xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1500">
 
@@ -48,12 +49,7 @@
                     </StackPanel>
                 </Button>
                 <Separator></Separator>
-                <Button  Margin="10,0,10,0">
-                    <StackPanel>
-                        <Image Source="some.jpg" Stretch="None" />
-                        <TextBlock>Export CSV/Excel</TextBlock>
-                    </StackPanel>
-                </Button>
+                
 
             </ToolBar>
 
@@ -67,16 +63,8 @@
                         <ColumnDefinition Width="156"/>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
-
-                        <StackPanel Background="AntiqueWhite">
-                            <Label Height="30" Margin="0,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold">Update data in view</Label>
-
-                            <Button x:Name="BtnUpdate" Content="Update data from USCIS" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False"  HorizontalContentAlignment="Center" Click="BtnUpdate_Click" />
-                            
-                        </StackPanel>
-
-                        <StackPanel Background="AliceBlue">
+                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Background="AliceBlue">
+                        <StackPanel Background="AliceBlue" VerticalAlignment="Center">
                             <Label Height="30" Margin="0,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold">Get new cases from USCIS</Label>
                             <StackPanel Orientation="Horizontal" >
                                 <Button x:Name="BtnNewBatch" Content="Get New Batch" Margin="10" Height="30" Width="110" HorizontalAlignment="Left" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0"  HorizontalContentAlignment="Center" Click="BtnNewBatch_Click"/>
@@ -94,69 +82,84 @@
                                 <Label Content="Threads:" FontWeight="Normal" Margin="10" Height="30" Width="110" Padding="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                                 <TextBox x:Name="TbThreads" Text="100" MinWidth="110" Height="30" MaxLength="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                             </StackPanel>
-                            <Button x:Name="BtnAddToExistingDb" Content="Add new cases to existing Database" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center" />
-                            <Button x:Name="BtnSaveNewDataToDb" Content="Save new cases to new Database" Margin="10" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"   Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center" />
                         </StackPanel>
-
 
                     </StackPanel>
 
-                    <StackPanel Grid.Column="2" CanHorizontallyScroll="True"  >
-                        <ToolBarTray Background="AliceBlue" IsLocked="True" >
+                    <Grid Grid.Column="2"  >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" >
                             <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
-                                <StackPanel Orientation="Horizontal"  >
-                                    <ComboBox x:Name="ComboBoxFilter"  Width="110" Height="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="Black" >
-                                        <ComboBoxItem IsSelected="True">All Cases</ComboBoxItem>
-                                        <ComboBoxItem >I-129F</ComboBoxItem>
-                                        <ComboBoxItem >I-751</ComboBoxItem>
-                                        <ComboBoxItem>I-539</ComboBoxItem>
-                                    </ComboBox>
-                                    <Button x:Name="BtnFilter" VerticalAlignment="Stretch"  Margin="0,0,0,0" Click="BtnFilter_Click" BorderBrush="#6AABD2" >
-                                        <StackPanel Orientation="Horizontal" >
-                                            <Image Source="some.jpg" Stretch="None" />
-                                            <TextBlock Margin="10,0,10,0">Filter</TextBlock>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
+                                <ComboBox x:Name="ComboBoxFilter"  Width="110" Height="22" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"   DropDownClosed="ComboBoxFilter_DropDownClosed"   >
+                                    <ComboBoxItem IsSelected="True">All Cases</ComboBoxItem>
+                                    <ComboBoxItem >I-129F</ComboBoxItem>
+                                    <ComboBoxItem >I-751</ComboBoxItem>
+                                    <ComboBoxItem>I-539</ComboBoxItem>
+                                </ComboBox>
 
                                 <Separator></Separator>
+                                <Label>Filter LastStatusChange</Label>
+                                <TextBox x:Name="TbDateFilter" Width="100" KeyUp="TextBox_KeyUp" ></TextBox>
+                                <Separator></Separator>
+
+                                <Button x:Name="BtnUpdate" IsEnabled="False" Width="120" Margin="10,0,10,0" Click="BtnUpdate_Click">
+                                    <StackPanel>
+                                        <Image Source="some.jpg" Stretch="None" />
+                                        <TextBlock>Update from USCIS</TextBlock>
+                                    </StackPanel>
+                                </Button>
+
+                                <Separator></Separator>
+
                                 <Button x:Name="BtnStatistics" IsEnabled="False" Width="120" Margin="10,0,10,0" Click="BtnStatistics_Click">
                                     <StackPanel>
                                         <Image Source="some.jpg" Stretch="None" />
                                         <TextBlock>Run Statistics</TextBlock>
                                     </StackPanel>
                                 </Button>
+
                                 <Separator></Separator>
+
                                 <Button x:Name="BtnSaveUpdateToDb" Width="120" Margin="0,0,0,0" Click="BtnSaveUpdateToDb_Click"  IsEnabled="False">
                                     <StackPanel Orientation="Horizontal" >
                                         <Image Source="some.jpg" Stretch="None" />
                                         <TextBlock Margin="10,0,10,0">Save to DB</TextBlock>
                                     </StackPanel>
                                 </Button>
+
                                 <Separator></Separator>
-                                <Button  Margin="10,0,10,0" Width="120">
+
+                                <Button x:Name="BtnExportExcel" Margin="10,0,10,0" Width="120" Click="BtnExportExcel_Click" IsEnabled="False">
                                     <StackPanel>
                                         <Image Source="some.jpg" Stretch="None" />
-                                        <TextBlock>Export CSV/Excel</TextBlock>
+                                        <TextBlock>Export Excel</TextBlock>
+                                    </StackPanel>
+                                </Button>
+
+                                <Separator></Separator>
+
+                                <Button x:Name="BtnClearView" Width="120" Margin="0,0,0,0" Click="BtnClearView_Click"  IsEnabled="False">
+                                    <StackPanel Orientation="Horizontal" >
+                                        <Image Source="some.jpg" Stretch="None" />
+                                        <TextBlock Margin="10,0,10,0">Clear Table</TextBlock>
                                     </StackPanel>
                                 </Button>
 
                             </ToolBar>
 
                         </ToolBarTray>
-                        <StackPanel Orientation="Horizontal"></StackPanel>
-
-                        <DataGrid  x:Name="DgData" CanUserSortColumns="True"  EnableColumnVirtualization="True" EnableRowVirtualization="True" VerticalAlignment="Stretch" Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" MaxHeight="633" MaxWidth="2000" MaxColumnWidth="300" ItemsSource="{Binding Source=___listOfCasesDB}"  AutoGenerateColumns="True" Sorting="dg_Sorting"  >
+                        <DataGrid Grid.Row="1"  x:Name="DgData" CanUserSortColumns="True"  EnableColumnVirtualization="True" EnableRowVirtualization="True" VerticalAlignment="Stretch"  MaxHeight="2000" MaxWidth="2000" MaxColumnWidth="300" ItemsSource="{Binding Source=_listOfCasesDB}"  AutoGenerateColumns="True" Sorting="Dg_Sorting" AutoGeneratingColumn="DgData_AutoGeneratingColumn"  >
                             <DataGrid.Columns>
                                 <!--<DataGridTextColumn Header = "Id" Binding = "{Binding Id }" />
                                 <DataGridTextColumn Header = "Status" Binding = "{Binding Status}" />-->
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
-
+                    </Grid>
 
                 </Grid>
-
 
             </TabItem>
             <TabItem x:Name="TabStats" Header="Stats" Width="80">
@@ -166,7 +169,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Content="Content goes here..." />
+                    <Label Grid.Row="0" Content="Statistics overview" />
                     <Border Grid.Row="1" BorderBrush="#C6C6C6" BorderThickness="1" >
                         <ScrollViewer>
                             <TextBlock x:Name="TbStatsOverview" Background="GhostWhite"  ></TextBlock>
@@ -175,12 +178,40 @@
 
                 </Grid>
 
-
-
-
             </TabItem>
             <TabItem Header="Charts" Width="80">
-                <Label Content="Content goes here..." />
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" >
+                        <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
+                            <Label>Range</Label>
+                            <TextBox
+                                Width="120"> Min </TextBox>
+                            <TextBox
+                                Width="120"> Max</TextBox>
+                            <Separator></Separator>
+                        </ToolBar>
+
+                    </ToolBarTray>
+                    
+                    <wpf:CartesianChart Grid.Row="1" Series="{Binding SeriesCollection}" LegendLocation="Bottom">
+                        <wpf:CartesianChart.AxisX>
+                            <wpf:Axis Title="Browser" 
+                                      Labels="{Binding Labels}" 
+                                      Separator="{x:Static wpf:DefaultAxes.CleanSeparator}" />
+                        </wpf:CartesianChart.AxisX>
+                        <!--<wpf:CartesianChart.AxisY>
+                            <wpf:Axis Title="Usage" LabelFormatter="{Binding Formatter}"></wpf:Axis>
+                        </wpf:CartesianChart.AxisY>-->
+                    </wpf:CartesianChart>
+                </Grid>
+
+
+                
             </TabItem>
         </TabControl>
 
@@ -218,53 +249,6 @@
 
         </DockPanel>
 
-
-
-
     </Grid>
-
-    <!--<Grid>
-        
-        -->
-    <!--<Button x:Name="btn_NewBatchCheck" Content="Start a New Batch Check" Height="30" Width="140" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,408,0,0" Click="NewBatchCheck" Background="#FFB9D1EA" BorderBrush="#FF707070" Padding="0" IsEnabled="False" HorizontalContentAlignment="Center"/>
-        <DataGrid x:Name="dg_Data" Margin="160,10,10,10"/>
-        <Label x:Name="InternetStatus" Content="Connecting to USCIS ..." Margin="10,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="140" Height="20" Padding="0" HorizontalContentAlignment="Center"/>
-        <Button x:Name="btn_NewDB" Content="New Database" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="140" Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}" Padding="0" Click="CreateDatabase" Height="30" HorizontalContentAlignment="Center"/>
-        <Button x:Name="btn_OpenDB" Content="Open Database" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Width="140" Padding="0" Click="OpenDatabase" Height="30" HorizontalContentAlignment="Center" Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}"/>
-        <Label Content="Interested USCIS Case ID" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" Padding="0" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="tb_CaseID" HorizontalAlignment="Left" Height="30" Margin="10,126,0,0" TextWrapping="Wrap" Text="YSC1890044628" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" LostFocus="NewCond"/>
-        <Label x:Name="CheckPreviousNCases" Content="Check Previous N Cases" HorizontalAlignment="Left" Margin="10,161,0,0" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" Padding="0" Height="16" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="tb_PrevCases" HorizontalAlignment="Left" Height="30" Margin="10,182,0,0" TextWrapping="Wrap" Text="30000" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" LostFocus="NewCond"/>
-        <Label x:Name="CheckPreviousNCases_Copy" Content="Check Next N Cases" HorizontalAlignment="Left" Margin="10,217,0,0" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" Padding="0" Height="16" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="tb_NextCases" HorizontalAlignment="Left" Height="30" Margin="10,238,0,0" TextWrapping="Wrap" Text="2000" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" LostFocus="NewCond"/>
-        <Label x:Name="CheckPreviousNCases_Copy1" Content="Step" HorizontalAlignment="Left" Margin="10,273,0,0" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" Padding="0" Height="16" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="tb_Step" HorizontalAlignment="Left" Height="30" Margin="10,294,0,0" TextWrapping="Wrap" Text="50" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" LostFocus="NewCond"/>
-        <Label x:Name="lb_CheckNCases" Content="Check 1 Case" HorizontalAlignment="Left" Margin="10,329,0,0" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" Padding="0" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lb_CaseIdStart" Content="Case ID Start" HorizontalAlignment="Left" Margin="10,345,0,0" VerticalAlignment="Top" Width="140" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5,5,5,0"/>
-        <Label Content="|" HorizontalAlignment="Left" Margin="10,366,0,0" VerticalAlignment="Top" Width="140" VerticalContentAlignment="Center" Padding="0" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lb_CaseIdEnd" Content="Case ID End" HorizontalAlignment="Left" Margin="10,382,0,0" VerticalAlignment="Top" Width="140" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="5,0,5,5"/>
-        <CheckBox x:Name="cb_DevToggle" Content="Use REAL USCIS URI" HorizontalAlignment="Left" Margin="10,443,0,0" VerticalAlignment="Top" Width="140" Background="{x:Null}" Foreground="Red" Click="DevStateToggle"/>-->
-    <!--
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        
-
-    </Grid>-->
 
 </Window>

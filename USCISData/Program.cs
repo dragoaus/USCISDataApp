@@ -96,7 +96,7 @@ namespace USCISData
 
         public static void StatisticsListCaseGroupedByStatus(List<FullCaseModel> listOfItems)
         {
-            var groupedCases = listOfItems.GroupBy(c => new { c.LastUpDateTime.Year, c.LastUpDateTime.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
+            var groupedCases = listOfItems.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
             foreach (var c in groupedCases)
             {
                 Console.WriteLine(c.Key + " " + c.Count());

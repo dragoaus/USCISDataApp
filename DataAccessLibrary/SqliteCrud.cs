@@ -77,7 +77,7 @@ namespace DataAccessLibrary
         public void CreateCase(FullCaseModel uscisCase)
         {
             string sql = "INSERT INTO Cases (Id, Status, LastUpdate, Form, Refresh, CaseDetails) values (@Id, @Status, @LastUpdate, @Form, @Refresh, @CaseDetails);";
-            db.SaveData(sql,new{Id=uscisCase.Id, Status= uscisCase.CaseStatus, LastUpdate=uscisCase.LastUpDateTime, Form=uscisCase.FormType, Refresh= uscisCase.RefreshDateTime,CaseDetails= uscisCase.CaseInfos}, _connectionString);
+            db.SaveData(sql,new{Id=uscisCase.Id, Status= uscisCase.CaseStatus, LastUpdate=uscisCase.LastStatusChange, Form=uscisCase.FormType, Refresh= uscisCase.RefreshDate,CaseDetails= uscisCase.CaseInfos}, _connectionString);
         }
 
         /// <summary>
@@ -94,12 +94,12 @@ namespace DataAccessLibrary
             if (basicCase == null)
             {
                 sql = "INSERT INTO CaseIDs (Id, Form, Refresh) values (@Id, @Form, @Refresh)";
-                db.SaveData(sql, new {Id=uscisCase.Id, Form= uscisCase.FormType, Refresh=uscisCase.RefreshDateTime },_connectionString);
+                db.SaveData(sql, new {Id=uscisCase.Id, Form= uscisCase.FormType, Refresh=uscisCase.RefreshDate },_connectionString);
             }
             else
             {
                 sql = "UPDATE CaseIDs SET Refresh=@Refresh where Id=@Id";
-                db.SaveData(sql, new { Id = uscisCase.Id,  Refresh = uscisCase.RefreshDateTime }, _connectionString);
+                db.SaveData(sql, new { Id = uscisCase.Id,  Refresh = uscisCase.RefreshDate }, _connectionString);
             }
 
 
@@ -108,12 +108,12 @@ namespace DataAccessLibrary
             if (listOfCases.Count == 0)
             {
                 sql = "INSERT INTO Cases (Id, Status, LastUpdate, Form, Refresh, CaseDetails) values (@Id, @Status, @LastUpdate, @Form, @Refresh, @CaseDetails);";
-                db.SaveData(sql, new { Id = uscisCase.Id, Status = uscisCase.CaseStatus, LastUpdate = uscisCase.LastUpDateTime, Form = uscisCase.FormType, Refresh = uscisCase.RefreshDateTime, CaseDetails = uscisCase.CaseInfos }, _connectionString);
+                db.SaveData(sql, new { Id = uscisCase.Id, Status = uscisCase.CaseStatus, LastUpdate = uscisCase.LastStatusChange, Form = uscisCase.FormType, Refresh = uscisCase.RefreshDate, CaseDetails = uscisCase.CaseInfos }, _connectionString);
             }
             else if (listOfCases.Last().CaseStatus!=uscisCase.CaseStatus)
             {
                 sql = "INSERT INTO Cases (Id, Status, LastUpdate, Form, Refresh, CaseDetails) values (@Id, @Status, @LastUpdate, @Form, @Refresh, @CaseDetails);";
-                db.SaveData(sql, new { Id = uscisCase.Id, Status = uscisCase.CaseStatus, LastUpdate = uscisCase.LastUpDateTime, Form = uscisCase.FormType, Refresh = uscisCase.RefreshDateTime, CaseDetails = uscisCase.CaseInfos }, _connectionString);
+                db.SaveData(sql, new { Id = uscisCase.Id, Status = uscisCase.CaseStatus, LastUpdate = uscisCase.LastStatusChange, Form = uscisCase.FormType, Refresh = uscisCase.RefreshDate, CaseDetails = uscisCase.CaseInfos }, _connectionString);
             }
         }
 
@@ -193,7 +193,7 @@ namespace DataAccessLibrary
         public void UpdateRefreshTimeForCaseIds(FullCaseModel uscisCase)
         {
             string sql = "UPDATE CaseIDs Set Refresh=@Refresh where Id=@Id";
-            db.SaveData(sql, new{Id=uscisCase.Id, Refresh=uscisCase.RefreshDateTime},_connectionString);
+            db.SaveData(sql, new{Id=uscisCase.Id, Refresh=uscisCase.RefreshDate},_connectionString);
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace DataAccessLibrary
             //compare if there are members of listOfCases that are not contained in list of cases in db
             foreach (var item in listOfCases)
             {
-                var temp = listOfStatuses.Where(x => (x.Id == item.Id) && (x.LastUpDateTime == item.LastUpDateTime)).ToList();
+                var temp = listOfStatuses.Where(x => (x.Id == item.Id) && (x.LastStatusChange == item.LastStatusChange)).ToList();
                 if (temp.Count == 0)
                 {
                     output.Add(item);

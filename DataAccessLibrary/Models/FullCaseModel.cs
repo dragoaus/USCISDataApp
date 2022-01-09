@@ -12,18 +12,18 @@ namespace DataAccessLibrary.Models
         public event PropertyChangedEventHandler PropertyChanged;
         public string Id { get; set; }
         public string CaseStatus { get; set; }
-        public DateTime LastUpDateTime { get; set; }
+        public DateTime LastStatusChange { get; set; }
         public string FormType { get; set; }
-        public DateTime RefreshDateTime { get; set; }
+        public DateTime RefreshDate { get; set; }
         public string CaseInfos { get; set; }
 
         public FullCaseModel(System.String id, System.String status, System.String lastUpdate, System.String form, System.String refresh, System.String caseDetails)
         {
             Id = id;
             CaseStatus = status;
-            LastUpDateTime = DateTime.Parse(lastUpdate);
+            LastStatusChange = DateTime.Parse(lastUpdate);
             FormType = form;
-            RefreshDateTime = DateTime.Parse(refresh);
+            RefreshDate = DateTime.Parse(refresh);
             CaseInfos = caseDetails;
         }
 
@@ -31,9 +31,9 @@ namespace DataAccessLibrary.Models
         {
             Id = caseInformation.Item1;
             CaseStatus= caseInformation.Item2;
-            LastUpDateTime = caseInformation.Item3;
+            LastStatusChange = caseInformation.Item3;
             FormType = caseInformation.Item4;
-            RefreshDateTime = caseInformation.Item5;
+            RefreshDate = caseInformation.Item5;
             CaseInfos = caseInformation.Item6;
         }
 
