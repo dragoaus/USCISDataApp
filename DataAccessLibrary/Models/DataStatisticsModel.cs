@@ -108,6 +108,10 @@ namespace DataAccessLibrary.Models
         {
             return $"Date: {c.Item1.Year:D4}.{c.Item1.Month:D2} - Cases: {c.Item2:D5} ";
         }
+        public string GetStatsForCaseGroup(Tuple<string, int, int, int, int> c)
+        {
+            return $"Case Group: {c.Item1} - Total Cases:{c.Item2:D5} - Untouched: {c.Item3:D5} - Open: {c.Item4:D5} - Closed: {c.Item5:D5}";
+        }
 
         public string GetBasicStatisticsForFullCases(List<Tuple<DateTime, int>> cases, string message)
         {
@@ -123,6 +127,25 @@ namespace DataAccessLibrary.Models
             }
             output += Environment.NewLine;
             output += Environment.NewLine;
+            return output;
+        }
+
+        public string GetBasicStatisticsForUscisGroups(List<Tuple<string, int, int, int, int>>  cases, string message)
+        {
+            string output = "";
+
+            output += Environment.NewLine;
+            output += message;
+
+            foreach (var caseStats in cases)
+            {
+                output += Environment.NewLine;
+                output += GetStatsForCaseGroup(caseStats).ToString();
+            }
+            output += Environment.NewLine;
+            output += Environment.NewLine;
+
+
             return output;
         }
 

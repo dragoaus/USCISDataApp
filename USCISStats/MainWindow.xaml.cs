@@ -39,6 +39,12 @@ public partial class MainWindow : Window
     public List<string> Labels { get; set; }
     //public Func<double, string> Formatter { get; set; }
 
+    public SeriesCollection SeriesCollectionRowChart { get; set; }
+    public string[] LabelsRowChart { get; set; }
+    public Func<double, string> Formatter { get; set; }
+
+
+
     public MainWindow()
     {
         InitializeComponent();
@@ -54,7 +60,6 @@ public partial class MainWindow : Window
         _webAccessClient = new WebAccessClient("https://egov.uscis.gov/casestatus/mycasestatus.do");
         InternetStatus.Content = await _webAccessClient.CheckInternet();
         InternetStatus.Background = new SolidColorBrush(Colors.LawnGreen);
-        
     }
 
     
@@ -273,11 +278,15 @@ public partial class MainWindow : Window
             "It shows monthly processing rate -> month when new status was applied");
         basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.ClosedCasesStatistics,
             "It shows monthly processing rate -> month when the case was closed");
+        basicStatistics += statistics.GetBasicStatisticsForUscisGroups(statistics.StatusPerUscisGroup,
+            "Status per USICS group - first 9 characters WAC2190093072 => WAC2190093xxx ");
+
         basicStatistics += "Done";
 
         TbStatsOverview.Text = basicStatistics;
         TabStats.Focus();
-        GetBasicStackedColumn(statistics.OpenCasesStatistics, statistics.ClosedCasesStatistics);
+        GetBasicStackedColumnChart(statistics.OpenCasesStatistics, statistics.ClosedCasesStatistics);
+        GetBasicRowChart();
         SetProgressBar(false, "Finished");
     }
 
@@ -303,8 +312,8 @@ public partial class MainWindow : Window
             fileName = saveFileDialog.FileName;
             var excel = new ExcelCrud();
             SetProgressBar(true, "Starting...");
-            var test = new BindingList<FullCaseModel>((IList<FullCaseModel>) this.DgData.ItemsSource);
-            excel.WriteDataToExcel(new List<FullCaseModel>(test), fileName);
+            var dataViewBindingList = new BindingList<FullCaseModel>((IList<FullCaseModel>) this.DgData.ItemsSource);
+            excel.WriteDataToExcel(new List<FullCaseModel>(dataViewBindingList), fileName);
             SetProgressBar(false, "Finished");
         }
     }
@@ -320,7 +329,7 @@ public partial class MainWindow : Window
     }
 
 
-    private void GetBasicStackedColumn(List<Tuple<DateTime, int>> inProcessing, List<Tuple<DateTime, int>> closedCases)
+    private void GetBasicStackedColumnChart(List<Tuple<DateTime, int>> inProcessing, List<Tuple<DateTime, int>> closedCases)
     {
         
         List<DateTime> dates = new List<DateTime>();
@@ -368,10 +377,11 @@ public partial class MainWindow : Window
             },
 
         };
-        
+
         DataContext = this;
 
     }
+
 
     public ChartValues<int> GetChartValues(List<DateTime> dates, List<Tuple<DateTime, int>> cases)
     {
@@ -403,30 +413,54 @@ public partial class MainWindow : Window
         return statisticsChartValues;
     }
 
+    private void GetBasicRowChart()
+    {
+        SeriesCollectionRowChart = new SeriesCollection
+        {
+            new RowSeries
+            {
+                Title = "2015",
+                Values = new ChartValues<double> { 1000, 5000, 3900, 5000 }
+            }
+        };
+
+        //adding series will update and animate the chart automatically
+        SeriesCollectionRowChart.Add(new RowSeries
+        {
+            Title = "2016",
+            Values = new ChartValues<double> { 1100, 5600, 4200 ,4800 }
+        });
+
+        ////also adding values updates and animates the chart automatically
+        //SeriesCollectionRowChart[1].Values.Add(48d);
+
+        LabelsRowChart = new[] { "Maria", "Susan", "Charles", "Frida" };
+        Formatter = value => value.ToString("N");
+
+        DataContext = this;
+    }
+
+    /// <summary>
+    /// Formats columns during autogeneration
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void DgData_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
     {
         if (e.PropertyType == typeof(System.DateTime))
             (e.Column as DataGridTextColumn).Binding.StringFormat = "yyyy-MM-dd";
     }
 
-    private void TextBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+    /// <summary>
+    /// Filter LastStatus 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void TbDateFilter_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
     {
-
         var filteredList = _listOfCasesDB.Where(c => c.LastStatusChange.ToString().Contains(TbDateFilter.Text)).ToList();
         DgData.ItemsSource = new BindingList<FullCaseModel>(filteredList);
         UpdateInfoBlock(filteredList.Count);
-
-
-        //if (ComboBoxFilter.Text == "All Cases")
-        //{
-        //    DgData.ItemsSource = _listOfCasesDB;
-        //    UpdateInfoBlock(_listOfCasesDB.Count);
-        //}
-        //else
-        //{
-        //    var filteredList = _listOfCasesDB.Where(c => c.FormType == ComboBoxFilter.Text).ToList();
-        //    DgData.ItemsSource = new BindingList<FullCaseModel>(filteredList);
-        //    UpdateInfoBlock(filteredList.Count);
-        //}
     }
+
 }

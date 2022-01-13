@@ -102,7 +102,7 @@
 
                                 <Separator></Separator>
                                 <Label>Filter LastStatusChange</Label>
-                                <TextBox x:Name="TbDateFilter" Width="100" KeyUp="TextBox_KeyUp" ></TextBox>
+                                <TextBox x:Name="TbDateFilter" Width="100" KeyUp="TbDateFilter_KeyUp" ></TextBox>
                                 <Separator></Separator>
 
                                 <Button x:Name="BtnUpdate" IsEnabled="False" Width="120" Margin="10,0,10,0" Click="BtnUpdate_Click">
@@ -152,10 +152,32 @@
 
                         </ToolBarTray>
                         <DataGrid Grid.Row="1"  x:Name="DgData" CanUserSortColumns="True"  EnableColumnVirtualization="True" EnableRowVirtualization="True" VerticalAlignment="Stretch"  MaxHeight="2000" MaxWidth="2000" MaxColumnWidth="300" ItemsSource="{Binding Source=_listOfCasesDB}"  AutoGenerateColumns="True" Sorting="Dg_Sorting" AutoGeneratingColumn="DgData_AutoGeneratingColumn"  >
-                            <DataGrid.Columns>
-                                <!--<DataGridTextColumn Header = "Id" Binding = "{Binding Id }" />
-                                <DataGridTextColumn Header = "Status" Binding = "{Binding Status}" />-->
-                            </DataGrid.Columns>
+
+
+
+                            <!--<DataGrid.RowHeaderTemplate>
+                                <DataTemplate>
+                                    
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>-->
+
+                            <!--<DataGrid.Columns>
+                                <DataGridTextColumn Header="Id" >
+                                    
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Content, RelativeSource=
+                                         {RelativeSource Mode=TemplatedParent}}"/>
+                                                <TextBox x:Name="txtId" Width="100"  />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header = "Id" Binding = "{Binding Id }" />
+                                <DataGridTextColumn Header = "Status" Binding = "{Binding Status}" />
+                            </DataGrid.Columns>-->
                         </DataGrid>
                     </Grid>
 
@@ -207,6 +229,18 @@
                         <!--<wpf:CartesianChart.AxisY>
                             <wpf:Axis Title="Usage" LabelFormatter="{Binding Formatter}"></wpf:Axis>
                         </wpf:CartesianChart.AxisY>-->
+                    </wpf:CartesianChart>
+
+                    <wpf:CartesianChart Grid.Row="2" Series="{Binding SeriesCollectionRowChart}" LegendLocation="Bottom">
+                        <wpf:CartesianChart.AxisX>
+                            <wpf:Axis Title="Salesman" LabelFormatter="{Binding Formatter}"></wpf:Axis>
+                        </wpf:CartesianChart.AxisX>
+                        <wpf:CartesianChart.AxisY>
+                            <wpf:Axis Title="Sold Apps" Labels="{Binding LabelsRowChart}"></wpf:Axis>
+                        </wpf:CartesianChart.AxisY>
+                        <wpf:CartesianChart.DataTooltip>
+                            <wpf:DefaultTooltip SelectionMode="SharedYValues"></wpf:DefaultTooltip>
+                        </wpf:CartesianChart.DataTooltip>
                     </wpf:CartesianChart>
                 </Grid>
 
