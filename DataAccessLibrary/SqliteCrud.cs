@@ -148,7 +148,6 @@ namespace DataAccessLibrary
             return output;
         }
 
-
         /// <summary>
         /// Get list of full cases of certain formType
         /// </summary>
@@ -247,7 +246,6 @@ namespace DataAccessLibrary
 
             fullCases = GetListOfFullModelsByForm(formType);
             caseIds = fullCases.Select(c => c.Id).Distinct().ToList();
-
 
             return fullCases;
         }

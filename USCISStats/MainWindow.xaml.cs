@@ -30,7 +30,7 @@ public partial class MainWindow : Window
     private BindingList<FullCaseModel> _listOfCasesDB;
     private int _numOfTasks;
     private int _progress;
-    
+
     private SqliteCrud _sql;
     private WebAccessClient _webAccessClient;
     private List<WebAccessClient> _webConnections;
@@ -61,8 +61,6 @@ public partial class MainWindow : Window
         InternetStatus.Content = await _webAccessClient.CheckInternet();
         InternetStatus.Background = new SolidColorBrush(Colors.LawnGreen);
     }
-
-    
 
     private void UpdateButtonsStatus(bool btnUpdate = false, bool btnStatistics = false,
         bool btnSaveUpdateToDb = false, bool btnExportExcel = false, bool btnClearview = false)
@@ -135,27 +133,27 @@ public partial class MainWindow : Window
     {
         if (e.Column.Header.ToString() == "Id")
             DgData.ItemsSource =
-                new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource).OrderBy(c => c.Id);
+                new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource).OrderBy(c => c.Id);
 
         if (e.Column.Header.ToString() == "FormType")
             DgData.ItemsSource =
-                new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource).OrderBy(c =>
-                    c.FormType);
+                new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource).OrderBy(c =>
+                   c.FormType);
 
         if (e.Column.Header.ToString() == "CaseStatus")
             DgData.ItemsSource =
-                new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource).OrderBy(c =>
-                    c.CaseStatus);
+                new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource).OrderBy(c =>
+                   c.CaseStatus);
 
         if (e.Column.Header.ToString() == "LastStatusChange")
             DgData.ItemsSource =
-                new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource).OrderBy(c =>
-                    c.LastStatusChange);
+                new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource).OrderBy(c =>
+                   c.LastStatusChange);
 
         if (e.Column.Header.ToString() == "RefreshDate")
             DgData.ItemsSource =
-                new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource).OrderBy(c =>
-                    c.RefreshDate);
+                new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource).OrderBy(c =>
+                   c.RefreshDate);
     }
 
     private void ComboBoxFilter_DropDownClosed(object sender, EventArgs e)
@@ -167,7 +165,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            var viewList = (IEnumerable<FullCaseModel>) DgData.ItemsSource;
+            var viewList = (IEnumerable<FullCaseModel>)DgData.ItemsSource;
             var filteredList = viewList.Where(c => c.FormType == ComboBoxFilter.Text).ToList();
             DgData.ItemsSource = new BindingList<FullCaseModel>(filteredList);
             UpdateInfoBlock(filteredList.Count);
@@ -203,6 +201,7 @@ public partial class MainWindow : Window
 
     private async Task GetCases(List<string> listOfCaseNums)
     {
+        _numOfTasks = int.Parse(TbThreads.Text);
         var splits = _converter.SplitList(listOfCaseNums, _numOfTasks);
 
         var list = new List<Task<List<Tuple<string, string>>>>();
@@ -257,7 +256,7 @@ public partial class MainWindow : Window
     {
         SetProgressBar(true, "Starting Stats Calculation");
         var listOfFullCases =
-            new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource);
+            new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource);
         var latestCaseStatus = new List<FullCaseModel>();
 
         await Task.Run(() =>
@@ -285,8 +284,12 @@ public partial class MainWindow : Window
 
         TbStatsOverview.Text = basicStatistics;
         TabStats.Focus();
+
+        DataContext = null;
         GetBasicStackedColumnChart(statistics.OpenCasesStatistics, statistics.ClosedCasesStatistics);
-        GetBasicRowChart();
+        GetBasicRowChart(statistics.StatusPerUscisGroup);
+        DataContext = this;
+
         SetProgressBar(false, "Finished");
     }
 
@@ -295,7 +298,7 @@ public partial class MainWindow : Window
     {
         var output = new List<string>();
         var listOfFullCasesFromView =
-            new List<FullCaseModel>((IEnumerable<FullCaseModel>) DgData.ItemsSource);
+            new List<FullCaseModel>((IEnumerable<FullCaseModel>)DgData.ItemsSource);
         output = listOfFullCasesFromView.Select(x => new string(x.Id)).Distinct().ToList();
         return output;
     }
@@ -312,7 +315,7 @@ public partial class MainWindow : Window
             fileName = saveFileDialog.FileName;
             var excel = new ExcelCrud();
             SetProgressBar(true, "Starting...");
-            var dataViewBindingList = new BindingList<FullCaseModel>((IList<FullCaseModel>) this.DgData.ItemsSource);
+            var dataViewBindingList = new BindingList<FullCaseModel>((IList<FullCaseModel>)this.DgData.ItemsSource);
             excel.WriteDataToExcel(new List<FullCaseModel>(dataViewBindingList), fileName);
             SetProgressBar(false, "Finished");
         }
@@ -331,7 +334,7 @@ public partial class MainWindow : Window
 
     private void GetBasicStackedColumnChart(List<Tuple<DateTime, int>> inProcessing, List<Tuple<DateTime, int>> closedCases)
     {
-        
+        //DataContext = null;
         List<DateTime> dates = new List<DateTime>();
 
         foreach (var item in inProcessing)
@@ -344,11 +347,11 @@ public partial class MainWindow : Window
             dates.Add(item.Item1);
         }
 
-        dates = dates.Select(c => c).Distinct().OrderBy(c=>c).ToList();
+        dates = dates.Select(c => c).Distinct().OrderBy(c => c).ToList();
 
         ChartValues<int> closedChartValues = GetChartValues(dates, closedCases);
 
-        ChartValues<int> inProcessingChartValues =  GetChartValues(dates, inProcessing); ;
+        ChartValues<int> inProcessingChartValues = GetChartValues(dates, inProcessing); ;
 
 
         Labels = new List<string>();
@@ -359,7 +362,6 @@ public partial class MainWindow : Window
 
         SeriesCollection = new SeriesCollection()
         {
-
             new StackedColumnSeries() //Cases in processing
             {
                 Values = closedChartValues,
@@ -369,17 +371,14 @@ public partial class MainWindow : Window
             },
             new StackedColumnSeries() //Cases in processing
             {
-
                 Values = inProcessingChartValues,
                 StackMode = StackMode.Values, // this is not necessary, values is the default stack mode
                 DataLabels = true,
                 Title = "In Processing:"
             },
-
         };
-
-        DataContext = this;
-
+        
+        //DataContext = this;
     }
 
 
@@ -398,11 +397,6 @@ public partial class MainWindow : Window
                 statisticsDictionary.Add(date, 0);
             }
         }
-        ChartValues<int> inProcessingChartValues = new ChartValues<int>();
-        foreach (var m in statisticsDictionary)
-        {
-            inProcessingChartValues.Add(m.Value);
-        }
 
         ChartValues<int> statisticsChartValues = new ChartValues<int>();
         foreach (var m in statisticsDictionary)
@@ -413,31 +407,51 @@ public partial class MainWindow : Window
         return statisticsChartValues;
     }
 
-    private void GetBasicRowChart()
+    private void GetBasicRowChart(List<Tuple<string, int, int, int, int>> statisticsStatusPerUscisGroup)
     {
+        List<string> caseGroup = statisticsStatusPerUscisGroup.Select(c => c.Item1).ToList();
+        List<int> untouched = statisticsStatusPerUscisGroup.Select(c => c.Item2).ToList();
+        List<int> inProcessing = statisticsStatusPerUscisGroup.Select(c => c.Item3).ToList();
+        List<int> closed = statisticsStatusPerUscisGroup.Select(c => c.Item4).ToList();
         SeriesCollectionRowChart = new SeriesCollection
         {
-            new RowSeries
+            new StackedRowSeries()
             {
-                Title = "2015",
-                Values = new ChartValues<double> { 1000, 5000, 3900, 5000 }
+                Values = GetChartValues(untouched),
+                StackMode = StackMode.Values, // this is not necessary, values is the default stack mode
+                DataLabels = true
+            },
+            new StackedRowSeries
+            {
+                Values = GetChartValues(inProcessing),
+                StackMode = StackMode.Values,
+                DataLabels = true
+            },
+            new StackedRowSeries
+            {
+                Values = GetChartValues(closed),
+                StackMode = StackMode.Values,
+                DataLabels = true
             }
+
         };
 
-        //adding series will update and animate the chart automatically
-        SeriesCollectionRowChart.Add(new RowSeries
-        {
-            Title = "2016",
-            Values = new ChartValues<double> { 1100, 5600, 4200 ,4800 }
-        });
 
-        ////also adding values updates and animates the chart automatically
-        //SeriesCollectionRowChart[1].Values.Add(48d);
-
-        LabelsRowChart = new[] { "Maria", "Susan", "Charles", "Frida" };
+        LabelsRowChart = caseGroup.ToArray();
         Formatter = value => value.ToString("N");
 
-        DataContext = this;
+        //DataContext = this;
+    }
+
+    public ChartValues<int> GetChartValues(List<int> items)
+    {
+        ChartValues<int> statisticsChartValues = new ChartValues<int>();
+        foreach (var m in items)
+        {
+            statisticsChartValues.Add(m);
+        }
+
+        return statisticsChartValues;
     }
 
     /// <summary>

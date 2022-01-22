@@ -28,7 +28,6 @@ namespace ClassLibrary
             return output;
         }
 
-
         /// <summary>
         /// Generates CaseList that needs to be checked in USCIS system
         /// </summary>
@@ -63,7 +62,6 @@ namespace ClassLibrary
 
             return output;
         }
-
 
         /// <summary>
         /// Extract case data from HTML and splits data into separate parts
@@ -142,6 +140,5 @@ namespace ClassLibrary
             }
             return output;
         }
-
     }
 }

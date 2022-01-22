@@ -30,16 +30,11 @@ namespace DataAccessLibrary.Models
         public FullCaseModel(Tuple<string, string, DateTime, string, DateTime, string> caseInformation)
         {
             Id = caseInformation.Item1;
-            CaseStatus= caseInformation.Item2;
+            CaseStatus = caseInformation.Item2;
             LastStatusChange = caseInformation.Item3;
             FormType = caseInformation.Item4;
             RefreshDate = caseInformation.Item5;
             CaseInfos = caseInformation.Item6;
         }
-
-
-
-
-        
     }
 }

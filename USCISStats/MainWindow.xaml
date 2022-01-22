@@ -49,14 +49,14 @@
                     </StackPanel>
                 </Button>
                 <Separator></Separator>
-                
+
 
             </ToolBar>
 
         </ToolBarTray>
 
         <TabControl Grid.Row="2" FontSize="13">
-            <TabItem Header="Table" Width="80">
+            <TabItem Header="Table" Width="130">
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="94"></ColumnDefinition>
@@ -152,39 +152,13 @@
 
                         </ToolBarTray>
                         <DataGrid Grid.Row="1"  x:Name="DgData" CanUserSortColumns="True"  EnableColumnVirtualization="True" EnableRowVirtualization="True" VerticalAlignment="Stretch"  MaxHeight="2000" MaxWidth="2000" MaxColumnWidth="300" ItemsSource="{Binding Source=_listOfCasesDB}"  AutoGenerateColumns="True" Sorting="Dg_Sorting" AutoGeneratingColumn="DgData_AutoGeneratingColumn"  >
-
-
-
-                            <!--<DataGrid.RowHeaderTemplate>
-                                <DataTemplate>
-                                    
-                                </DataTemplate>
-                            </DataGrid.RowHeaderTemplate>-->
-
-                            <!--<DataGrid.Columns>
-                                <DataGridTextColumn Header="Id" >
-                                    
-                                    <DataGridTextColumn.HeaderTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding Content, RelativeSource=
-                                         {RelativeSource Mode=TemplatedParent}}"/>
-                                                <TextBox x:Name="txtId" Width="100"  />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTextColumn.HeaderTemplate>
-
-                                </DataGridTextColumn>
-                                <DataGridTextColumn Header = "Id" Binding = "{Binding Id }" />
-                                <DataGridTextColumn Header = "Status" Binding = "{Binding Status}" />
-                            </DataGrid.Columns>-->
                         </DataGrid>
                     </Grid>
 
                 </Grid>
 
             </TabItem>
-            <TabItem x:Name="TabStats" Header="Stats" Width="80">
+            <TabItem x:Name="TabStats" Header="Stats" Width="130">
 
                 <Grid >
                     <Grid.RowDefinitions>
@@ -201,37 +175,64 @@
                 </Grid>
 
             </TabItem>
-            <TabItem Header="Charts" Width="80">
+            <TabItem Header="Monthly Processing" Width="130">
                 <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="41*"/>
+                        <ColumnDefinition Width="1453*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
+
                     </Grid.RowDefinitions>
-                    <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" >
+                    <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" Grid.ColumnSpan="2" >
                         <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
                             <Label>Range</Label>
                             <TextBox
-                                Width="120"> Min </TextBox>
+                                Width="120">Min</TextBox>
                             <TextBox
-                                Width="120"> Max</TextBox>
+                                Width="120">Max</TextBox>
                             <Separator></Separator>
                         </ToolBar>
 
                     </ToolBarTray>
-                    
-                    <wpf:CartesianChart Grid.Row="1" Series="{Binding SeriesCollection}" LegendLocation="Bottom">
+
+                    <wpf:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Top" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.RowSpan="2">
                         <wpf:CartesianChart.AxisX>
-                            <wpf:Axis Title="Browser" 
+                            <wpf:Axis Title="Processed Cases" 
                                       Labels="{Binding Labels}" 
                                       Separator="{x:Static wpf:DefaultAxes.CleanSeparator}" />
                         </wpf:CartesianChart.AxisX>
-                        <!--<wpf:CartesianChart.AxisY>
-                            <wpf:Axis Title="Usage" LabelFormatter="{Binding Formatter}"></wpf:Axis>
-                        </wpf:CartesianChart.AxisY>-->
                     </wpf:CartesianChart>
 
-                    <wpf:CartesianChart Grid.Row="2" Series="{Binding SeriesCollectionRowChart}" LegendLocation="Bottom">
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Case Groups" Width="130">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="41*"/>
+                        <ColumnDefinition Width="1453*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"></RowDefinition>
+
+                    </Grid.RowDefinitions>
+                    <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" Grid.ColumnSpan="2" >
+                        <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
+                            <Label>Range</Label>
+                            <TextBox
+                                Width="120">Min</TextBox>
+                            <TextBox
+                                Width="120">Max</TextBox>
+                            <Separator></Separator>
+                        </ToolBar>
+
+                    </ToolBarTray>
+
+                    <wpf:CartesianChart Grid.Row="1" Series="{Binding SeriesCollectionRowChart}" LegendLocation="Top" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.RowSpan="2" ScrollMode="XY">
                         <wpf:CartesianChart.AxisX>
                             <wpf:Axis Title="Salesman" LabelFormatter="{Binding Formatter}"></wpf:Axis>
                         </wpf:CartesianChart.AxisX>
@@ -245,7 +246,7 @@
                 </Grid>
 
 
-                
+
             </TabItem>
         </TabControl>
 
@@ -277,7 +278,7 @@
                         <ProgressBar x:Name="PbStatus" Minimum="0"  Value="0" Width="190" Height="16" />
                         <TextBlock x:Name="TxtBlkStatus" Text="Idle" TextAlignment="Center"></TextBlock>
                     </Grid>
-                    
+
                 </StatusBarItem>
             </StatusBar>
 

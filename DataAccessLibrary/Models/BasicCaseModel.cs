@@ -16,6 +16,5 @@ namespace DataAccessLibrary.Models
             FormType = form;
             RefreshDateTime = DateTime.Parse(refresh);
         }
-        
     }
 }
