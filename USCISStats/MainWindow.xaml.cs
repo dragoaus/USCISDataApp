@@ -43,12 +43,13 @@ public partial class MainWindow : Window
     public string[] LabelsRowChart { get; set; }
     public Func<double, string> Formatter { get; set; }
 
-
+     
 
     public MainWindow()
     {
         InitializeComponent();
         LoadContents();
+        
     }
 
     public async void LoadContents()
@@ -235,10 +236,7 @@ public partial class MainWindow : Window
             UpdateButtonsStatus();
             SetProgressBar(true, "Saving started...");
 
-            await Task.Run(() =>
-            {
-                foreach (var c in _listOfCasesDB) _sql.UpsertCase(c);
-            });
+            await Task.Run(()=> _sql.UpsertListOfCases(_listOfCasesDB.ToList()));
 
             SetProgressBar(false, "Finished");
             UpdateInfoBlock(_listOfCasesDB.Count);
@@ -332,15 +330,19 @@ public partial class MainWindow : Window
     }
 
 
+
     private void GetBasicStackedColumnChart(List<Tuple<DateTime, int>> inProcessing, List<Tuple<DateTime, int>> closedCases)
     {
         //DataContext = null;
         List<DateTime> dates = new List<DateTime>();
-
+        var inProcessingGroup = inProcessing.GroupBy(c => new Tuple<DateTime>(new DateTime(c.Item1.Year, c.Item1.Month,15))).ToList();
+        
         foreach (var item in inProcessing)
         {
             dates.Add(item.Item1);
         }
+
+        
 
         foreach (var item in closedCases)
         {
@@ -435,9 +437,9 @@ public partial class MainWindow : Window
             }
 
         };
+            
 
-
-        LabelsRowChart = caseGroup.ToArray();
+            LabelsRowChart = caseGroup.ToArray();
         Formatter = value => value.ToString("N");
 
         //DataContext = this;
@@ -478,3 +480,4 @@ public partial class MainWindow : Window
     }
 
 }
+

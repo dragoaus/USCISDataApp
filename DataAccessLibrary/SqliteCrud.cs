@@ -117,6 +117,26 @@ namespace DataAccessLibrary
             }
         }
 
+        public void UpsertListOfCases(List<FullCaseModel> listOfCases)
+        {
+            List<FullCaseModel> currentCases = GetAllFullCasesAsModels();
+
+            List<FullCaseModel> listOfUpdates = new List<FullCaseModel>();
+
+            foreach (var n in listOfCases)
+            {
+                var test = currentCases.Any(c => c.Id == n.Id && c.LastStatusChange == n.LastStatusChange);
+                if (test == false)
+                {
+                    listOfUpdates.Add(n);
+                }
+            }
+
+            foreach (var newCase in listOfUpdates)
+            {
+                UpsertCase(newCase);
+            }
+        }
 
         /// <summary>
         /// Return list of USCIS Models of specific formType

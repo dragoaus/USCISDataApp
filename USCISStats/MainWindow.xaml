@@ -175,7 +175,7 @@
                 </Grid>
 
             </TabItem>
-            <TabItem Header="Monthly Processing" Width="130">
+            <TabItem Header="Processing" Width="130">
                 <Grid >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="41*"/>
@@ -188,21 +188,28 @@
                     </Grid.RowDefinitions>
                     <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" Grid.ColumnSpan="2" >
                         <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
-                            <Label>Range</Label>
-                            <TextBox
-                                Width="120">Min</TextBox>
-                            <TextBox
-                                Width="120">Max</TextBox>
+                            
+                            <Label>Period: </Label>
+                            <ComboBox x:Name="PeriodFilter"  Width="70" Height="22" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"   DropDownClosed="ComboBoxFilter_DropDownClosed"   >
+                                <ComboBoxItem IsSelected="True">Month</ComboBoxItem>
+                                <ComboBoxItem >Day</ComboBoxItem>
+                            </ComboBox>
                             <Separator></Separator>
                         </ToolBar>
 
                     </ToolBarTray>
 
-                    <wpf:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Top" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.RowSpan="2">
+                    <wpf:CartesianChart Grid.Row="1" Zoom="Xy" Series="{Binding SeriesCollection}" LegendLocation="Top" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.RowSpan="2">
                         <wpf:CartesianChart.AxisX>
                             <wpf:Axis Title="Processed Cases" 
-                                      Labels="{Binding Labels}" 
-                                      Separator="{x:Static wpf:DefaultAxes.CleanSeparator}" />
+                                      FontSize="15" 
+                                      Labels="{Binding Labels}">
+                                <wpf:Axis.Separator>
+                                    <wpf:Separator IsEnabled="False" 
+                                                   Step="1">
+                                    </wpf:Separator>
+                                </wpf:Axis.Separator>
+                            </wpf:Axis>
                         </wpf:CartesianChart.AxisX>
                     </wpf:CartesianChart>
 
@@ -220,8 +227,13 @@
                         <RowDefinition Height="*"></RowDefinition>
 
                     </Grid.RowDefinitions>
-                    <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" Grid.ColumnSpan="2" >
-                        <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
+                    <ToolBarTray Grid.Row="0" 
+                                 Background="AliceBlue" 
+                                 IsLocked="True" 
+                                 Grid.ColumnSpan="2" >
+                        <ToolBar Band="1" 
+                                 FontSize="13" 
+                                 Background="AliceBlue" >
                             <Label>Range</Label>
                             <TextBox
                                 Width="120">Min</TextBox>
@@ -231,18 +243,20 @@
                         </ToolBar>
 
                     </ToolBarTray>
-
-                    <wpf:CartesianChart Grid.Row="1" Series="{Binding SeriesCollectionRowChart}" LegendLocation="Top" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.RowSpan="2" ScrollMode="XY">
-                        <wpf:CartesianChart.AxisX>
+                    <wpf:CartesianChart Grid.Row="1" Grid.ColumnSpan="2"  Zoom="Xy"  ZoomingSpeed="1" Series="{Binding SeriesCollectionRowChart}" LegendLocation="Top"  Margin="0,0,0,0" Grid.RowSpan="2" ScrollMode="XY">
+                        <wpf:CartesianChart.AxisX >
                             <wpf:Axis Title="Salesman" LabelFormatter="{Binding Formatter}"></wpf:Axis>
                         </wpf:CartesianChart.AxisX>
-                        <wpf:CartesianChart.AxisY>
-                            <wpf:Axis Title="Sold Apps" Labels="{Binding LabelsRowChart}"></wpf:Axis>
+                        <wpf:CartesianChart.AxisY >
+                            <wpf:Axis Title="Sold Apps"  Labels="{Binding LabelsRowChart}"></wpf:Axis>
                         </wpf:CartesianChart.AxisY>
                         <wpf:CartesianChart.DataTooltip>
                             <wpf:DefaultTooltip SelectionMode="SharedYValues"></wpf:DefaultTooltip>
                         </wpf:CartesianChart.DataTooltip>
                     </wpf:CartesianChart>
+
+
+                    
                 </Grid>
 
 
@@ -283,7 +297,7 @@
             </StatusBar>
 
         </DockPanel>
-
+        
     </Grid>
 
 </Window>

@@ -77,25 +77,25 @@ namespace DataAccessLibrary.Models
                 StatusPerUscisGroup.Add(new Tuple<string, int, int, int, int>(caseNumGroup, totalCasesInGroup, untouchedCasesInGroup, openCasesInGroup, closedCasesInGroup));
             }
 
-            var groupedCases = UntouchedCases.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
+            var groupedCases = UntouchedCases.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month, c.LastStatusChange.Day }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
             UntouchedCasesStatistics = new List<Tuple<DateTime, int>>();
             foreach (var c in groupedCases)
             {
-                UntouchedCasesStatistics.Add(new Tuple<DateTime, int>(new DateTime(c.Key.Year, c.Key.Month, 15), c.Count()));
+                UntouchedCasesStatistics.Add(new Tuple<DateTime, int>(new DateTime(c.Key.Year, c.Key.Month, c.Key.Day), c.Count()));
             }
 
-            groupedCases = OpenCases.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
+            groupedCases = OpenCases.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month, c.LastStatusChange.Day }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
             OpenCasesStatistics = new List<Tuple<DateTime, int>>();
             foreach (var c in groupedCases)
             {
-                OpenCasesStatistics.Add(new Tuple<DateTime, int>(new DateTime(c.Key.Year, c.Key.Month, 15), c.Count()));
+                OpenCasesStatistics.Add(new Tuple<DateTime, int>(new DateTime(c.Key.Year, c.Key.Month, c.Key.Day), c.Count()));
             }
 
-            groupedCases = ClosedCases.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
+            groupedCases = ClosedCases.GroupBy(c => new { c.LastStatusChange.Year, c.LastStatusChange.Month, c.LastStatusChange.Day }).OrderBy(c => c.Key.Month).OrderBy(c => c.Key.Year).ToList();
             ClosedCasesStatistics = new List<Tuple<DateTime, int>>();
             foreach (var c in groupedCases)
             {
-                ClosedCasesStatistics.Add(new Tuple<DateTime, int>(new DateTime(c.Key.Year, c.Key.Month, 15), c.Count()));
+                ClosedCasesStatistics.Add(new Tuple<DateTime, int>(new DateTime(c.Key.Year, c.Key.Month, c.Key.Day), c.Count()));
             }
 
         }
@@ -110,7 +110,8 @@ namespace DataAccessLibrary.Models
         }
         public string GetStatsForCaseGroup(Tuple<string, int, int, int, int> c)
         {
-            return $"Case Group: {c.Item1} - Total Cases:{c.Item2:D5} - Untouched: {c.Item3:D5} - Open: {c.Item4:D5} - Closed: {c.Item5:D5}";
+            
+            return $"Case Group: {c.Item1} - Total Cases: {c.Item2:D5} - Untouched: {c.Item3:D5} - Open: {c.Item4:D5} - Closed: {c.Item5:D5}";
         }
 
         public string GetBasicStatisticsForFullCases(List<Tuple<DateTime, int>> cases, string message)
