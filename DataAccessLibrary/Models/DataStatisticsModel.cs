@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Xsl;
+using Org.BouncyCastle.Crypto;
 
 namespace DataAccessLibrary.Models
 {
@@ -99,6 +101,7 @@ namespace DataAccessLibrary.Models
             }
 
         }
+
         /// <summary>
         /// Gets basis stats from cases based on case status (untouched, open, closed)
         /// </summary>
@@ -111,7 +114,7 @@ namespace DataAccessLibrary.Models
         public string GetStatsForCaseGroup(Tuple<string, int, int, int, int> c)
         {
             
-            return $"Case Group: {c.Item1} - Total Cases: {c.Item2:D5} - Untouched: {c.Item3:D5} - Open: {c.Item4:D5} - Closed: {c.Item5:D5}";
+            return $"Case Group: {c.Item1+"xxx"} - Total Cases: {c.Item2} - Untouched: {c.Item3} - Open: {c.Item4} - Closed: {c.Item5}";
         }
 
         public string GetBasicStatisticsForFullCases(List<Tuple<DateTime, int>> cases, string message)
@@ -149,6 +152,8 @@ namespace DataAccessLibrary.Models
 
             return output;
         }
+
+        
 
     }
 }

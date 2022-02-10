@@ -49,7 +49,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         LoadContents();
-        
     }
 
     public async void LoadContents()
@@ -269,11 +268,11 @@ public partial class MainWindow : Window
         var statistics = new DataStatisticsModel(latestCaseStatus);
 
         var basicStatistics = "";
-        basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.UntouchedCasesStatistics,
+        basicStatistics += statistics.GetBasicStatisticsForFullCases(GetYearMonthAggregation(statistics.UntouchedCasesStatistics),
             "Untouched - Cases that only have NOA1 status -> if noa was in Jan, than case is in Jan");
-        basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.OpenCasesStatistics,
+        basicStatistics += statistics.GetBasicStatisticsForFullCases(GetYearMonthAggregation(statistics.OpenCasesStatistics),
             "It shows monthly processing rate -> month when new status was applied");
-        basicStatistics += statistics.GetBasicStatisticsForFullCases(statistics.ClosedCasesStatistics,
+        basicStatistics += statistics.GetBasicStatisticsForFullCases(GetYearMonthAggregation(statistics.ClosedCasesStatistics),
             "It shows monthly processing rate -> month when the case was closed");
         basicStatistics += statistics.GetBasicStatisticsForUscisGroups(statistics.StatusPerUscisGroup,
             "Status per USICS group - first 9 characters WAC2190093072 => WAC2190093xxx ");
@@ -284,13 +283,23 @@ public partial class MainWindow : Window
         TabStats.Focus();
 
         DataContext = null;
-        GetBasicStackedColumnChart(statistics.OpenCasesStatistics, statistics.ClosedCasesStatistics);
+        GetBasicStackedColumnChart(GetYearMonthAggregation(statistics.OpenCasesStatistics), GetYearMonthAggregation(statistics.ClosedCasesStatistics));
         GetBasicRowChart(statistics.StatusPerUscisGroup);
         DataContext = this;
 
         SetProgressBar(false, "Finished");
     }
 
+    public List<Tuple<DateTime, int>> GetYearMonthAggregation(List<Tuple<DateTime, int>> data)
+    {
+        List<Tuple<DateTime, int>> output = new List<Tuple<DateTime, int>>();
+
+        output = data.GroupBy(g => new { g.Item1.Year, g.Item1.Month })
+            .Select(x => new Tuple<DateTime, int>(new DateTime(x.Key.Year, x.Key.Month, 15), x.Sum(u => u.Item2)))
+            .ToList();
+
+        return output;
+    }
 
     public List<string> GetListOfUniqueCaseNums()
     {

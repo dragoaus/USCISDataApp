@@ -168,7 +168,7 @@
                     <Label Grid.Row="0" Content="Statistics overview" />
                     <Border Grid.Row="1" BorderBrush="#C6C6C6" BorderThickness="1" >
                         <ScrollViewer>
-                            <TextBlock x:Name="TbStatsOverview" Background="GhostWhite"  ></TextBlock>
+                            <TextBox x:Name="TbStatsOverview" IsReadOnly="True" Background="GhostWhite"  ></TextBox>
                         </ScrollViewer>
                     </Border>
 
@@ -188,13 +188,17 @@
                     </Grid.RowDefinitions>
                     <ToolBarTray Grid.Row="0" Background="AliceBlue" IsLocked="True" Grid.ColumnSpan="2" >
                         <ToolBar Band="1" FontSize="13" Background="AliceBlue" >
-                            
-                            <Label>Period: </Label>
-                            <ComboBox x:Name="PeriodFilter"  Width="70" Height="22" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"   DropDownClosed="ComboBoxFilter_DropDownClosed"   >
-                                <ComboBoxItem IsSelected="True">Month</ComboBoxItem>
-                                <ComboBoxItem >Day</ComboBoxItem>
+                            <Label>View: </Label>
+                            <ComboBox x:Name="TimePeriodFilter"  Width="70" Height="22" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"   DropDownClosed="ComboBoxFilter_DropDownClosed"   >
+                                <ComboBoxItem IsSelected="True">Year</ComboBoxItem>
+                                <ComboBoxItem >Month</ComboBoxItem>
                             </ComboBox>
                             <Separator></Separator>
+                            <Label>Period:</Label>
+                            <ComboBox x:Name="PeriodFilter"  Width="70" Height="22" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"   DropDownClosed="ComboBoxFilter_DropDownClosed"   >
+                                <ComboBoxItem IsSelected="True">All</ComboBoxItem>
+                            </ComboBox>
+
                         </ToolBar>
 
                     </ToolBarTray>
